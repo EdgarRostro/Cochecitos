@@ -44,13 +44,13 @@ model_params = {
 
 canvas_element = CanvasGrid(agent_portrayal, 25, 25, 500, 500)
 
-moves_chart = ChartModule(
-    [{"Label": label, "Color": color} for (label, color) in colorsSteps.items()]
-)
+# moves_chart = ChartModule(
+#     [{"Label": label, "Color": color} for (label, color) in colorsSteps.items()]
+# )
 
 server = ModularServer(
     Room, 
-    [canvas_element, moves_chart], 
+    [canvas_element], 
     "Robots",
     model_params
 )

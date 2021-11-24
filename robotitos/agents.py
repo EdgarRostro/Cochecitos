@@ -15,7 +15,7 @@ class Cell(Agent):
         count = 0
         for coords in neighbors:
             # Obtener agentes en los vecinos
-            cellAgents = self.model.grid[coords[0]][coords[1]]        
+            cellAgents = self.model.grid[coords[0]][coords[1]]
             # Incrementar count cuando hay más de dos agentes (obstáculo)
             hasObstacle = False
             for agent in cellAgents:
@@ -63,8 +63,9 @@ class Robot(Agent):
         if cellAgents[0].condition == "Obstacle":
             return (True, cellAgents[0])
         # Si el tamaño es uno, la celda está vacía
-        if len(cellAgents) >= 6:
-            return (True, cellAgents[0])
+        if len(cellAgents) > 1:
+            if cellAgents[1].condition == "Piled":
+                return (True, cellAgents[1])
         # Checar si alguna celda es obstáculo
         ans = (False, cellAgents[0])
         for agent in cellAgents:
@@ -92,7 +93,7 @@ class Robot(Agent):
         elif abs(deltaX) > abs(deltaY):
             newCoords = (self.pos[0] + dirX, self.pos[1])
         elif abs(deltaX) < abs(deltaY):
-            newCoords = (self.pos[0], self.pos[1] + dirY)    
+            newCoords = (self.pos[0], self.pos[1] + dirY)
         else:
             newCoords = (self.pos[0] + dirX, self.pos[1])
         

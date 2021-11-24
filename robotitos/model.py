@@ -15,29 +15,29 @@ class Room(Model):
         self.running = True
         self.timer = 0
         self.timeLimit = timer
-        self.steps = 0
-        self.id = 0
+        # self.steps = 0
+        id = 0
 
         # Poner celdas en todo el grid
         for(contents, x, y) in self.grid.coord_iter():
-            cell = Cell(self.id, self)
+            cell = Cell(id, self)
             self.grid.place_agent(cell, (x, y))
             self.schedule.add(cell)
-            self.id += 1
+            id += 1
         # Agregar cajas (según densidad)
         for (contents, x, y) in self.grid.coord_iter():
             if self.random.random() < density and not (x in [0, 1] and y == 0):
-                new_box = Box(self.id, self)
+                new_box = Box(id, self)
                 self.grid.place_agent(new_box, (x, y))
                 self.schedule.add(new_box)
-                self.id += 1
+                id += 1
         
         # Poner cantidad necesaria de robots
         for i in range(robots):
-            new_robot = Robot(self.id, self)
+            new_robot = Robot(id, self)
             self.grid.place_agent(new_robot, (self.random.randint(0, width - 1), self.random.randint(0, height - 1)))
             self.schedule.add(new_robot)
-            self.id += 1
+            id += 1
     
     def check_pile(self):
         self.pile_size += 1

@@ -60,5 +60,14 @@ def updateModel():
         currentStep += 1
         return jsonify({'message':f'Model updated to step {currentStep}.', 'currentStep':currentStep})
 
+@app.route('/getConditions', methods=['GET'])
+def conditions():
+    global warehouse
+
+    if request.method == 'GET':
+        robotsCond = [{"condition": agent.condition} for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
+
+        return jsonify({'conditions': robotsCond})
+
 if __name__=='__main__':
     app.run(host="localhost", port=8585, debug=True)

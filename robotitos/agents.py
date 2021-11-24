@@ -36,7 +36,7 @@ class Box(Agent):
         super().__init__(unique_id, model)
         # Conditions = Unplaced, Piled, Moving
         self.condition = "Unplaced"
-        self.y = 1
+        self.y = 0.48
 
     def step(self):
         pass
@@ -134,7 +134,7 @@ class Robot(Agent):
                     self.box = obs[1]
                     self.condition = "Placing"
                     self.box.condition = "Moving"
-                    self.box.y = 2
+                    self.box.y = 0.8
                 elif isinstance(obs[1], Cell):
                    self.model.grid.move_agent(self, newPos)
                    self.moves += 1
@@ -155,7 +155,7 @@ class Robot(Agent):
             else:
                 # Soltar caja y cambiar estado
                 self.box.condition = "Piled"
-                self.box.y = self.model.pile_size+1
+                self.box.y = 0.32*self.model.pile_size+0.48
                 # La caja se queda una posición a la izquierda de donde está el robot
                 pile = (self.model.pile[0]-1, self.model.pile[1])
                 self.model.grid.move_agent(self.box, pile)

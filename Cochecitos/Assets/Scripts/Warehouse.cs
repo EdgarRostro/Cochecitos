@@ -20,7 +20,7 @@ public class Warehouse : MonoBehaviour
     [SerializeField] float density;
     [SerializeField] int robotAmt;
     [SerializeField] float timer;
-    float timeToUpdate = 5.0f, dt;
+    float timeToUpdate = 2.0f, dt;
     [SerializeField] GameObject box, robot;
     List<GameObject> boxes;
     List<GameObject> robots;

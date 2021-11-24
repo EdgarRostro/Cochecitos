@@ -1,26 +1,15 @@
 from random import shuffle
 from mesa import Model
 from mesa.space import MultiGrid
-from mesa.time import RandomActivation, SimultaneousActivation, StagedActivation, BaseScheduler
-from mesa.datacollection import DataCollector
-from boxes import Cell, Robot, Box
+from mesa.time import RandomActivation
+from agents import Cell, Robot, Box
 
 class Room(Model):
     def __init__(self, width, height, density, robots, timer):
         self.pile = (1,0)
         self.pile_size = 0
 
-        # model_stages = ["stage_1", "stage_2"]
-        # self.schedule = StagedActivation(self, model_stages)
-        # self.schedule = RandomActivation(self)
-        self.schedule = BaseScheduler(self)
-
-        # Inicializar data colector
-        self.datacollector = DataCollector(
-            {
-                "Movimientos": lambda m: self.count_moves(m)
-            }
-        )
+        self.schedule = RandomActivation(self)
 
         self.grid = MultiGrid(width, height, torus=False)
         self.running = True
@@ -70,9 +59,6 @@ class Room(Model):
                 count += 1
         if count == 0:
             self.running = False
-        
-        # Collect data on each step
-        # self.datacollector.collect(self)
 
     @staticmethod
     def count_moves(model):

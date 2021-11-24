@@ -37,7 +37,7 @@ def robots():
     global warehouse
 
     if request.method == 'GET':
-        robotsPos = [{"x" : agent.pos[0], "y" : 1, "z" : agent.pos[1]} for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
+        robotsPos = [{"x" : agent.pos[0], "y" : 0.4, "z" : agent.pos[1]} for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
 
         return jsonify({'positions': robotsPos})
 

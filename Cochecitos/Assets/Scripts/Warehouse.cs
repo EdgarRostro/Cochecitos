@@ -8,11 +8,16 @@ public class AgentData {
     public List<Vector3> positions;
 }
 
+public class AgentConditions {
+    public List<string> conditions;
+}
+
 public class Warehouse : MonoBehaviour
 {
     string url = "localhost:8585";
     string getRobotsEndpoint = "/getRobots";
     string getBoxesEndpoint = "/getBoxes";
+    string getConditionsEndpoint = "/getConditions";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
     [SerializeField] int width;
@@ -28,7 +33,7 @@ public class Warehouse : MonoBehaviour
     AgentData robotPositions;
     List<Vector3> oldBoxPos;
     List<Vector3> oldRobotPos;
-
+    AgentConditions robotConditions;
     bool refreshed;
 
     // Start is called before the first frame update
@@ -36,9 +41,9 @@ public class Warehouse : MonoBehaviour
     {
         boxPositions = new AgentData();
         robotPositions = new AgentData();
+        robotConditions = new AgentConditions();
         boxes = new List<GameObject>();
         robots = new List<GameObject>();
-
         StartCoroutine(StartSimulation());
         refreshed = true;
         // timer = 1.0f;
@@ -167,6 +172,15 @@ public class Warehouse : MonoBehaviour
         else {
             oldRobotPos = new List<Vector3>(robotPositions.positions);
             robotPositions = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+        }
+    }
+
+    IEnumerator GetRobotConditions(){
+        UnityWebRequest www = UnityWebRequest.get(url+getConditionsEndpoint);
+        yield return www.SendWebRequest();
+        if(www.result != UnityWebRequest.Result.Success) Debug.Log(www.error);
+        else{
+            robotConditions = JsonUtility.FromJson<AgentConditions>(www.downloadHandler.text);
         }
     }
 }

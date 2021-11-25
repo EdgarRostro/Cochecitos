@@ -76,6 +76,14 @@ public class Warehouse : MonoBehaviour
 
                 Vector3 dir = robots[i].transform.position - robotPositions.positions[i];
                 robots[i].transform.rotation = Quaternion.LookRotation(dir);
+
+                if( robotConditions.conditions[i] == "Searching" ){
+                    robots[i].GetComponent<Perry>().turnOn();
+                } else if (robotConditions.conditions[i] == "Placing"){
+                    robots[i].GetComponent<Perry>().turnOff();
+                }
+
+
             }
             // Move time from the last frame
             timer += Time.deltaTime;

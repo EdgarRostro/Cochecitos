@@ -19,8 +19,8 @@ public class Warehouse : MonoBehaviour
     [SerializeField] int height;
     [SerializeField] float density;
     [SerializeField] int robotAmt;
-    [SerializeField] float timer;
-    float timeToUpdate = 2.0f, dt;
+    [SerializeField] int timeLimit;
+    float timeToUpdate = 2.0f, dt, timer, totalTime;
     [SerializeField] GameObject box, robot;
     List<GameObject> boxes;
     List<GameObject> robots;
@@ -30,6 +30,7 @@ public class Warehouse : MonoBehaviour
     List<Vector3> oldRobotPos;
 
     bool refreshed;
+    int countStart;
 
     // Start is called before the first frame update
     void Start()
@@ -41,14 +42,20 @@ public class Warehouse : MonoBehaviour
 
         StartCoroutine(StartSimulation());
         refreshed = true;
-        // timer = 1.0f;
+        totalTime = 0;
+        timer = 0;
+        countStart = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(timer >= timeToUpdate)
-        {
+        if(totalTime > timeLimit) {
+            Debug.Log("Time's up!");
+            StartCoroutine(Quit());
+        } 
+
+        if(timer >= timeToUpdate) {
             timer = 0;
             refreshed = false;
             StartCoroutine(UpdateSimulation());
@@ -57,7 +64,7 @@ public class Warehouse : MonoBehaviour
         // Smooth out the transition at start and end
         dt = t * t * ( 3f - 2f*t);
 
-        if(refreshed) {
+        if(refreshed && countStart >= 4) {
             // Update box position
             for(int i=0; i < boxes.Count; i++) {
                 Vector3 interpolated = Vector3.Lerp(oldBoxPos[i], boxPositions.positions[i], dt);
@@ -72,10 +79,10 @@ public class Warehouse : MonoBehaviour
                 Vector3 dir = robots[i].transform.position - robotPositions.positions[i];
                 robots[i].transform.rotation = Quaternion.LookRotation(dir);
             }
-            // Move time from the last frame
-            timer += Time.deltaTime;
         }
-
+        // Move time from the last frame
+        timer += Time.deltaTime;
+        totalTime += Time.deltaTime;
     }
 
     // Send parameters to API
@@ -117,6 +124,7 @@ public class Warehouse : MonoBehaviour
             foreach(Vector3 position in boxPositions.positions) {
                 boxes.Add(Instantiate(box, position, Quaternion.identity));
             }
+            countStart++;
         }
     }
     
@@ -134,6 +142,7 @@ public class Warehouse : MonoBehaviour
             foreach(Vector3 position in robotPositions.positions) {
                 robots.Add(Instantiate(robot, position, Quaternion.identity));
             }
+            countStart++;
         }
     }
 
@@ -144,12 +153,18 @@ public class Warehouse : MonoBehaviour
         if(www.result != UnityWebRequest.Result.Success) Debug.Log(www.error);
         else {
             Debug.Log("Exito");
-            StartCoroutine(GetBoxPositions());
-            StartCoroutine(GetRobotPositions());
+            if(www.downloadHandler.text == "False") {
+                StartCoroutine(Quit());
+            }
+            else {
+                StartCoroutine(GetBoxPositions());
+                StartCoroutine(GetRobotPositions());
+            }
         }
         refreshed = true;
     }
 
+    // Store new box positions
     IEnumerator GetBoxPositions(){
         UnityWebRequest www = UnityWebRequest.Get(url+getBoxesEndpoint);
         yield return www.SendWebRequest();
@@ -157,9 +172,11 @@ public class Warehouse : MonoBehaviour
         else {
             oldBoxPos = new List<Vector3>(boxPositions.positions);
             boxPositions = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+            countStart++;
         }
     }
 
+    // Store new robot positions
     IEnumerator GetRobotPositions(){
         UnityWebRequest www = UnityWebRequest.Get(url+getRobotsEndpoint);
         yield return www.SendWebRequest();
@@ -167,6 +184,30 @@ public class Warehouse : MonoBehaviour
         else {
             oldRobotPos = new List<Vector3>(robotPositions.positions);
             robotPositions = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+            countStart++;
         }
+    }
+
+    // Begin process to quit game
+    IEnumerator Quit() {
+        // Get total movements of all agents
+        UnityWebRequest www = UnityWebRequest.Get(url+"/getMoves");
+        yield return www.SendWebRequest();
+        if(www.result != UnityWebRequest.Result.Success) Debug.Log(www.error);
+        else {
+            string totalMoves = www.downloadHandler.text;
+            Debug.Log("Movements: " + totalMoves);
+        }
+
+        // Get percentage of piled boxes and stop execution
+        www = UnityWebRequest.Get(url+"/getPiledBoxes");
+        yield return www.SendWebRequest();
+        if(www.result != UnityWebRequest.Result.Success) Debug.Log(www.error);
+        else {
+            string piledBoxes = www.downloadHandler.text;
+            Debug.LogFormat("Piled boxes: " + piledBoxes);
+        }
+        Debug.Log("Time: " + totalTime);
+        UnityEditor.EditorApplication.isPlaying = false;
     }
 }

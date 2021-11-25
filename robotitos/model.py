@@ -51,19 +51,18 @@ class Room(Model):
     def step(self):
         self.schedule.step()
         count = 0
-        self.timer += 1
-        if self.timer >= self.timeLimit:
-            self.running = False
+        # self.timer += 1
+        # if self.timer >= self.timeLimit:
+        #     self.running = False
         for agent in self.schedule.agents:
             if agent.condition in ["Unplaced", "Moving"]:
                 count += 1
         if count == 0:
             self.running = False
 
-    @staticmethod
-    def count_moves(model):
+    def count_moves(self):
         count = 0
-        for agent in model.schedule.agents:  
+        for agent in self.schedule.agents:  
             if isinstance(agent, Robot):
                 count += agent.moves
 

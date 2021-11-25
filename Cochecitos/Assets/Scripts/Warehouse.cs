@@ -8,13 +8,22 @@ public class AgentData {
     public List<Vector3> positions;
 }
 
+
+public class AgentConditions {
+    public List<string> conditions;
+}
+
 public class Warehouse : MonoBehaviour
 {
     string url = "localhost:8585";
     string getRobotsEndpoint = "/getRobots";
     string getBoxesEndpoint = "/getBoxes";
+    string getConditionsEndpoint = "/getConditions";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
+
+    [SerializeField] Perry perryScript;
+
     [SerializeField] int width;
     [SerializeField] int height;
     [SerializeField] float density;
@@ -28,6 +37,7 @@ public class Warehouse : MonoBehaviour
     AgentData robotPositions;
     List<Vector3> oldBoxPos;
     List<Vector3> oldRobotPos;
+    AgentConditions robotConditions;
 
     bool refreshed;
 
@@ -36,6 +46,7 @@ public class Warehouse : MonoBehaviour
     {
         boxPositions = new AgentData();
         robotPositions = new AgentData();
+        robotConditions = new AgentConditions();
         boxes = new List<GameObject>();
         robots = new List<GameObject>();
 
@@ -71,6 +82,8 @@ public class Warehouse : MonoBehaviour
 
                 Vector3 dir = robots[i].transform.position - robotPositions.positions[i];
                 robots[i].transform.rotation = Quaternion.LookRotation(dir);
+
+                robots[i].GetComponent<Perry>().condition = robotConditions.conditions[i];
             }
             // Move time from the last frame
             timer += Time.deltaTime;
@@ -146,6 +159,7 @@ public class Warehouse : MonoBehaviour
             Debug.Log("Exito");
             StartCoroutine(GetBoxPositions());
             StartCoroutine(GetRobotPositions());
+            StartCoroutine(GetRobotConditions());
         }
         refreshed = true;
     }
@@ -167,6 +181,15 @@ public class Warehouse : MonoBehaviour
         else {
             oldRobotPos = new List<Vector3>(robotPositions.positions);
             robotPositions = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+        }
+    }
+
+    IEnumerator GetRobotConditions(){
+        UnityWebRequest www = UnityWebRequest.Get(url+getConditionsEndpoint);
+        yield return www.SendWebRequest();
+        if(www.result != UnityWebRequest.Result.Success) Debug.Log(www.error);
+        else {
+            robotConditions = JsonUtility.FromJson<AgentConditions>(www.downloadHandler.text);
         }
     }
 }

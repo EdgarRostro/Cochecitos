@@ -4,34 +4,39 @@ using UnityEngine;
 
 public class Perry : MonoBehaviour
 {
-    [SerializeField] public GameObject siren;
-    [SerializeField] public bool isSirenOn;
+    GameObject siren;
+    bool isSirenOn;
+    public string condition;
     // Start is called before the first frame update
     void Start()
     {
         isSirenOn = false;
-        siren = GameObject.Find("Siren");
+        siren = transform.Find("Siren").gameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(isSirenOn){
-            siren.GetComponent<Siren>().turnOn();
-        } else {
-            siren.GetComponent<Siren>().turnOff();
+        if( condition == "Searching" ){
+            turnOn();
+        } else if (condition == "Placing"){
+            turnOff();
         }
     }
 
     public void turnOn(){
         isSirenOn = true;
-        siren.GetComponent<Siren>().turnOn();
+        Debug.Log("Turn on");
+    
+        siren.GetComponent<Renderer>().material.SetColor("_TintColor", new Color(1, 0, 0, 179/255));
+        transform.Find("Siren/PointLight").gameObject.GetComponent<Light>().enabled = true;
     }
 
     public void turnOff(){
         isSirenOn = false;
-        siren.GetComponent<Siren>().turnOff();
+        Debug.Log("Turn off");
+        
+        siren.GetComponent<Renderer>().material.SetColor("_TintColor", new Color(1, 1, 0, 179/255));
+        transform.Find("Siren/PointLight").gameObject.GetComponent<Light>().enabled = false;
     }
-
 }
- 

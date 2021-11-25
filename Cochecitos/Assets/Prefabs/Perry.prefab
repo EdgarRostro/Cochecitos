@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9157626288713263955}
   - component: {fileID: 7154934061731521964}
   m_Layer: 0
-  m_Name: Point Light
+  m_Name: PointLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2423,6 +2423,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4318822535638526910}
+  - component: {fileID: 3059400701209635371}
   m_Layer: 0
   m_Name: Perry
   m_TagString: Untagged
@@ -2451,6 +2452,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3059400701209635371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4318822535638526911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 949af7614ad331a4e9c82daada4f05a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  siren: {fileID: 4318822534412684311}
+  isSirenOn: 0
+  condition: 
 --- !u!1 &4318822535660996381
 GameObject:
   m_ObjectHideFlags: 0

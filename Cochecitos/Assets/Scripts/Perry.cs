@@ -5,12 +5,10 @@ using UnityEngine;
 public class Perry : MonoBehaviour
 {
     GameObject siren;
-    bool isSirenOn;
     public string condition;
     // Start is called before the first frame update
     void Start()
     {
-        isSirenOn = false;
         siren = transform.Find("Siren").gameObject;
     }
 
@@ -25,16 +23,14 @@ public class Perry : MonoBehaviour
     }
 
     public void turnOn(){
-        isSirenOn = true;
-        Debug.Log("Turn on");
+        // Debug.Log("Turn on");
     
         siren.GetComponent<Renderer>().material.SetColor("_TintColor", new Color(1, 0, 0, 179/255));
         transform.Find("Siren/PointLight").gameObject.GetComponent<Light>().enabled = true;
     }
 
     public void turnOff(){
-        isSirenOn = false;
-        Debug.Log("Turn off");
+        // Debug.Log("Turn off");
         
         siren.GetComponent<Renderer>().material.SetColor("_TintColor", new Color(1, 1, 0, 179/255));
         transform.Find("Siren/PointLight").gameObject.GetComponent<Light>().enabled = false;

@@ -65,7 +65,8 @@ def conditions():
     global warehouse
 
     if request.method == 'GET':
-        robotsCond = [{"condition": agent.condition} for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
+        # robotsCond = [{"condition": agent.condition} for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
+        robotsCond = [agent.condition for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
 
         return jsonify({'conditions': robotsCond})
 

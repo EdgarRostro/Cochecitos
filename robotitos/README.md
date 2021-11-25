@@ -10,56 +10,70 @@ TC2008B Modelación de Sistemas Multiagentes con Gráficas Computacionales
 
 24 de noviembre de 2021
 
-## Objetivo
+<details><summary>Índice</summary>
+
+[Objetivo](#objetivo)
+
+[Diseño](#diseño)
+
+[Pruebas](#pruebas)
+
+[Propuestas de mejora](#propuestas-de-mejora)
+
+[Problemas encontrados](#problemas-encontrados)
+
+</details>
+
+# Objetivo
 Crear un sistema multiagentes, donde una cantidad k de robots acomoda todas las cajas (en posiciones iniciales aleatorias) en pilas de 5 en la esquina inferior izquierda del almacén.
 
-## Diseño
+# Diseño
 <img src=./classDiagram.jpeg>
 
 **Figura 1.** Diagrama de clases de objetos del almacén.
 
-### Robots
-#### Estados
+## Robots
+### Estados
 - Buscando cajita
 - Acomodando cajita
 
-#### Protocolos (ordenadas por prioridad)
+### Protocolos (ordenadas por prioridad)
 - Si está buscando cajita, el robot debe dirigirse a la cajita vecina no acomodada más cercana.
 - Si está buscando cajita y no tiene cajita en alguna celda vecina, se mueve aleatoriamente.
 - Si está acomodando cajita, el robot debe dirigirse a la posición para acomodarla usando la ruta más corta: primero moviéndose en el eje donde la distancia sea mayor.
 - Si está acomodando caja y se encuentra con algún obstáculo (otro robot u otra caja), debe rodearla y evitar el obstáculo
 
-### Cajitas
-#### Estados
+## Cajitas
+### Estados
 - No acomodada
 - En movimiento
 - Apilada
 
-#### Reglas
+### Reglas
 - Si está en acomodamiento su posición es la misma que la caja (más arriba en el eje y)
 - Empezar cajas como apiladas, para posteriormente posicionar cajas sobre esa caja
 
-### Celdas
-#### Estados
+## Celdas
+### Estados
 - Disponible
 - Obstáculo
 
-#### Reglas
+### Reglas
 - Si tres de sus vecinos son obstáculos, cambiar estado a obstáculo.
 
-## Pruebas
-### Variables
-#### Independientes
+# Pruebas
+## Variables
+### Independientes
 - Densidad de cajas (default: 0.2)
 - Tamaño del grid (default: 10x10)
 - Cantidad de robots (default: 3)
 - Tiempo límite (default: 100s)
-#### Dependientes
+### Dependientes
 - Tiempo transcurrido
 - Cantidad de movimientos
 - Cantidad de cajas apiladas
 
-### Resultados
+## Resultados
 | Densidad | Tiempo (s) | Movimientos | Cajas apiladas (%) |
 |----------|------------|-------------|--------------------|
 | 0.1      | 100        | 115         | 36                 |
@@ -92,7 +106,7 @@ Crear un sistema multiagentes, donde una cantidad k de robots acomoda todas las 
 
 **Tabla 4.** Pruebas de tiempo límite
 
-## Propuestas de mejora
+# Propuestas de mejora
 - Enviar mensaje de ayuda a los otros robots en caso de que un robot quede atrapado entre obstáculos para que éstos puedan recogerlos. 
 - Si está viajando con una caja y se encuentra con otra en su camino, dejar la que estaba llevando y recoger la que le estorba.
 - Planear una ruta a seguir por cada robot, evitando invadir rutas ajenas y buscando cajas.
@@ -104,6 +118,6 @@ Crear un sistema multiagentes, donde una cantidad k de robots acomoda todas las 
 - Definir una zona de descarga que sea suficiente para acomodar las cajas existentes.
 - Empezar a recoger las cajas que estén la zona de descarga definida.
 
-## Problemas encontrados
+# Problemas encontrados
 - Muchas veces los robots pueden quedar atrapados al estar rodeados de cajas. 
 - La librería Mesa puede dejar de funcionar inesperadamente.

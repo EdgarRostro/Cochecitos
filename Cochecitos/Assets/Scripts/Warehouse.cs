@@ -8,7 +8,6 @@ public class AgentData {
     public List<Vector3> positions;
 }
 
-
 public class AgentConditions {
     public List<string> conditions;
 }
@@ -38,7 +37,6 @@ public class Warehouse : MonoBehaviour
     List<Vector3> oldBoxPos;
     List<Vector3> oldRobotPos;
     AgentConditions robotConditions;
-
     bool refreshed;
 
     // Start is called before the first frame update
@@ -49,7 +47,6 @@ public class Warehouse : MonoBehaviour
         robotConditions = new AgentConditions();
         boxes = new List<GameObject>();
         robots = new List<GameObject>();
-
         StartCoroutine(StartSimulation());
         refreshed = true;
         // timer = 1.0f;

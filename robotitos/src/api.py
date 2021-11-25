@@ -58,7 +58,7 @@ def updateModel():
     if request.method == 'GET':
         warehouse.step()
         currentStep += 1
-        return jsonify({'message':f'Model updated to step {currentStep}.', 'currentStep':currentStep})
+        return str(warehouse.running)
 
 @app.route('/getConditions', methods=['GET'])
 def conditions():
@@ -69,6 +69,29 @@ def conditions():
         robotsCond = [agent.condition for agent in warehouse.schedule.agents if isinstance(agent, Robot)]
 
         return jsonify({'conditions': robotsCond})
+
+@app.route('/getMoves', methods=['GET'])
+def moves():
+    global warehouse
+    
+    return str(warehouse.count_moves())
+
+@app.route('/getPiledBoxes', methods=['GET'])
+def piled_boxes():
+    global warehouse
+
+    totalBoxes = 0
+    piledBoxes = 0
+    
+    if request.method == 'GET':
+        for agent in warehouse.schedule.agents:
+            if isinstance(agent, Box):
+                totalBoxes += 1
+                if agent.condition == "Piled":
+                    piledBoxes += 1
+
+
+        return str(piledBoxes/totalBoxes)
 
 if __name__=='__main__':
     app.run(host="localhost", port=8585, debug=True)

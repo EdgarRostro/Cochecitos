@@ -20,16 +20,13 @@ public class Warehouse : MonoBehaviour
     string getConditionsEndpoint = "/getConditions";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-
-    [SerializeField] Perry perryScript;
-
     [SerializeField] int width;
     [SerializeField] int height;
     [SerializeField] float density;
     [SerializeField] int robotAmt;
     [SerializeField] int timeLimit;
     float timeToUpdate = 2.0f, dt, timer, totalTime;
-    [SerializeField] GameObject box, robot;
+    [SerializeField] GameObject box, robot, room;
     List<GameObject> boxes;
     List<GameObject> robots;
     AgentData boxPositions;
@@ -43,6 +40,9 @@ public class Warehouse : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        room.transform.localScale = new Vector3((float)width, 0.15f, (float)height);
+        room.transform.localPosition = new Vector3((float)width/2-0.5f, 0.24f, (float)height/2-0.5f);
+
         boxPositions = new AgentData();
         robotPositions = new AgentData();
         robotConditions = new AgentConditions();
@@ -105,7 +105,7 @@ public class Warehouse : MonoBehaviour
         form.AddField("robots", robotAmt.ToString());
         form.AddField("timer", timer.ToString());
 
-        UnityWebRequest www = UnityWebRequest.Post(url+"/init", form);
+        UnityWebRequest www = UnityWebRequest.Post(url+sendConfigEndpoint, form);
 
         yield return www.SendWebRequest();
 
@@ -201,6 +201,7 @@ public class Warehouse : MonoBehaviour
 
     // Begin process to quit game
     IEnumerator Quit() {
+        Debug.Log("I am quitting");
         // Get total movements of all agents
         UnityWebRequest www = UnityWebRequest.Get(url+"/getMoves");
         yield return www.SendWebRequest();

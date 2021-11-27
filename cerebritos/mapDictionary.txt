@@ -10,7 +10,7 @@
     "≥" : ["Right", "Down"],
     "⋝" : ["Right", "Up"], 
     "ú" : "tf Right", 
-    "ù" : "tf Left", 
-    "Û" : "TF Up",
-    "Ǔ" : "TF Down",
+    "ù" : ["Left"], 
+    "Û" : ["Up"],
+    "Ǔ" : ["Down"],
 }

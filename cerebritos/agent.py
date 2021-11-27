@@ -4,6 +4,26 @@ from math import sqrt
 def distanceBetweenPoints(point1, point2):
     return sqrt( pow(point1[0] - point2[0], 2) + pow(point1[1] + point2[1], 2))
 
+
+class Traffic_Light(Agent):
+    """
+    Obstacle agent. Just to add obstacles to the grid.
+    """
+    def __init__(self, unique_id, model, letter, direction):
+        super().__init__(unique_id, model)
+        # Possible states: Red, Yellow, Green
+        # Red if uppercase, green if lowercase
+        if letter.isupper():
+            self.state = "Red"
+        else:
+            self.state = "Green"
+        self.directions = direction
+    
+    def step(self):
+        # if self.model.schedule.steps % self.timeToChange == 0:
+        #     self.state = not self.state
+        pass
+
 class Car(Agent):
     """
     Agent that moves randomly.
@@ -21,36 +41,31 @@ class Car(Agent):
         super().__init__(unique_id, model)
         self.is_parked = False
         self.destination = destination
-        
+        self.directionLight = None
+        self.oldDirection = "Up"
 
     def move(self):
         """ 
         Determines if the agent can move in the direction that was chosen
         """
-        cell = self.model.grid[self.pos[0]][self.pos[1]]
-        # possible_steps = self.model.grid.get_neighborhood(
-        #     self.pos,
-        #     moore=True, # Boolean for whether to use Moore neighborhood (including diagonals) or Von Neumann (only up/down/left/right).
-        #     include_center=True) 
+        currentCell = self.model.grid[self.pos[0]][self.pos[1]]
+        # Next cell
+        (x, y, newDirection) = self.goToCoords(self.destination, self.pos)
+        # Next next cell
+        (nextX, nextY, nextNewDirection) = self.goToCoords(self.destination, (x, y))
+
+        # If traffic light is ahead and is not green, do not move...
+        if isinstance(currentCell[0], Traffic_Light):
+            if currentCell[0].state != "Green":
+                return
+        self.turnOnBlinkers(newDirection, nextNewDirection)
+        # Move to next cell and update direction
+        self.model.grid.move_agent(self, (x, y))
+        self.oldDirection = newDirection
+        # Check if car has arrived to destination
+        if self.pos == self.destination:
+            self.is_parked = True
         
-        # # Checks which grid cells are empty
-        # freeSpaces = list(map(self.model.grid.is_cell_empty, possible_steps))
-
-        # next_moves = [p for p,f in zip(possible_steps, freeSpaces) if f == True]
-       
-        # next_move = self.random.choice(next_moves)
-        # # Now move:
-        # if self.random.random() < 0.1:
-        #     self.model.grid.move_agent(self, next_move)
-        #     self.steps_taken+=1
-
-        # If the cell is empty, moves the agent to that cell; otherwise, it stays at the same position
-        # if freeSpaces[self.direction]:
-        #     self.model.grid.move_agent(self, possible_steps[self.direction])
-        #     print(f"Se mueve de {self.pos} a {possible_steps[self.direction]}; direction {self.direction}")
-        # else:
-        #     print(f"No se puede mover de {self.pos} en esa direccion.")                
-
     def getDirection(self, direction):
         """
         Returns coordinates in the given direction
@@ -79,55 +94,80 @@ class Car(Agent):
                 return True
         return False
 
-    def goToCoords(self, target):
+    def goToCoords(self, target, start):
         """
         Returns the coords of the cell to go to next in order to arrive at target (tuple). Ignores obstacles
         """
-        # Do nothing if target == pos
-        if target == self.pos:
-            return
+        if target == start:
+            return (target[0], target[1], self.oldDirection)
         # Get current road cell (or traffic light cell) (asume road agent is ALWAYS @0)
-        currentRoadAgent = self.model.grid[self.pos[0]][self.pos[1]][0]
+        currentRoadAgent = self.model.grid[start[0]][start[1]][0]
         # Get current road cell directions
         currentRoadAgentDirections = currentRoadAgent.directions
         # Store here coords nearest to target
-        nearestCoods = None
+        nearestCoords = None
+        nextDirection = None
         # Get available neighbors
         for direction in currentRoadAgentDirections:
             coords = self.getDirection(direction)
             # Check if distance is bigger than that of nearest coords
-            if nearestCoods != None and distanceBetweenPoints(nearestCoods, target) < distanceBetweenPoints(coords, target):
+            if nearestCoords != None and distanceBetweenPoints(nearestCoords, target) < distanceBetweenPoints(coords, target):
                 continue
             # Check if cell is an obstacle
             if self.isObstacle(coords):
                 continue
-            # If all pasaes, change nearest coords
-            nearestCoods = coords
+            # If all passes, change nearest coords
+            nearestCoords = coords
+            nextDirection = direction
         # Return coordinates
-        return nearestCoods
+        return (nearestCoords[0], nearestCoords[1], direction)
+    
+    def turnOnBlinkers(self, newDirection, newNewDirection):
+        """
+        Compares old direction and new direction to turn on/off blinkers
+        """
+        if newDirection == newNewDirection and newDirection == self.oldDirection:
+            self.directionLight = (0,0)
+            return
+
+        turns = {
+            "Up" : {
+                "Left" : (1, 0),
+                "Right" : (0, 1)
+            },
+            "Down" : {
+                "Right" : (1, 0),
+                "Left" : (0, 1)
+            },
+            "Left" : {
+                "Up" : (0, 1), 
+                "Down": (1, 0)
+            }, 
+            "Right": {
+                "Up" : (1, 0),
+                "Down" : (0, 1)
+            }
+        }
+        """
+                up  down    left    right
+        up      x   x       r       l
+        down    x   x       l       r
+        left    r   l       x       x
+        right   l   r       x       x
+        """ 
+        self.directionLight = turns[newDirection][newNewDirection]
+
 
     def step(self):
         """ 
         Determines the new direction it will take, and then moves
         """
-        # self.direction = self.random.randint(0,8)
-        # print(f"Agente: {self.unique_id} movimiento {self.direction}")
-        # self.move()
-        pass
-
-class Traffic_Light(Agent):
-    """
-    Obstacle agent. Just to add obstacles to the grid.
-    """
-    def __init__(self, unique_id, model, state = "Red"):
-        super().__init__(unique_id, model)
-        # Possible states: Red, Yellow, Green
-        self.state = state
-        self.directions = []
-    def step(self):
-        # if self.model.schedule.steps % self.timeToChange == 0:
-        #     self.state = not self.state
-        pass
+        # Only moves if it isn't parked
+        if not self.is_parked:
+            self.move()
+        # Turn on blinkers when parked
+        else:
+            self.directionLight = (1, 1)
 
 class Destination(Agent):
     """
@@ -157,7 +197,6 @@ class Road(Agent):
         super().__init__(unique_id, model)
         # Create a set of directions to allow for multidirectional road cells
         self.directions = directions
-
 
     def step(self):
         pass

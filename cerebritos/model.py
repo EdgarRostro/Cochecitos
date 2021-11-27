@@ -31,7 +31,7 @@ class RandomModel(Model):
                         agent = Road(f"r{r*self.width+c}", self, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                     elif col in ["ú", "ù", "Û", "Ǔ"]:
-                        agent = Traffic_Light(f"tl{r*self.width+c}", self, "Red" if col == "S" else "Green")
+                        agent = Traffic_Light(f"tl{r*self.width+c}", self, col, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.schedule.add(agent)
                     elif col == "#":

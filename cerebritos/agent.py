@@ -42,29 +42,29 @@ class Car(Agent):
         self.is_parked = False
         self.destination = destination
         self.directionLight = None
-        self.oldDirection = "Up"
+    
+    def assignDirection(self):
+        self.oldDirection = self.model.grid[self.pos[0]][self.pos[1]][0].directions[0]
 
     def move(self):
         """ 
         Determines if the agent can move in the direction that was chosen
         """
+        # Check if car has arrived to destination
+        if self.destination in self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False):
+            self.model.grid.move_agent(self, self.destination)
+            self.is_parked = True
+            return
+
         currentCell = self.model.grid[self.pos[0]][self.pos[1]]
         # Next cell
-        (x, y, newDirection) = self.goToCoords(self.destination, self.pos)
-        # Next next cell
-        (nextX, nextY, nextNewDirection) = self.goToCoords(self.destination, (x, y))
-
+        (x, y, self.newDirection) = self.goToCoords(self.destination, self.pos)
         # If traffic light is ahead and is not green, do not move...
         if isinstance(currentCell[0], Traffic_Light):
             if currentCell[0].state != "Green":
                 return
-        self.turnOnBlinkers(newDirection, nextNewDirection)
-        # Move to next cell and update direction
-        self.model.grid.move_agent(self, (x, y))
-        self.oldDirection = newDirection
-        # Check if car has arrived to destination
-        if self.pos == self.destination:
-            self.is_parked = True
+        
+        self.intention = (x,y)
         
     def getDirection(self, direction):
         """
@@ -105,13 +105,14 @@ class Car(Agent):
         # Get current road cell directions
         currentRoadAgentDirections = currentRoadAgent.directions
         # Store here coords nearest to target
-        nearestCoords = None
-        nextDirection = None
+        nearestCoords = self.pos
+        nextDirection = self.oldDirection
         # Get available neighbors
         for direction in currentRoadAgentDirections:
             coords = self.getDirection(direction)
-            # Check if distance is bigger than that of nearest coords
-            if nearestCoords != None and distanceBetweenPoints(nearestCoords, target) < distanceBetweenPoints(coords, target):
+            # Check if distance is bigger than that of nearest coords (only in intersections)
+            # if len(currentRoadAgentDirections)>1 and distanceBetweenPoints(nearestCoords, target) < distanceBetweenPoints(coords, target):
+            if len(currentRoadAgentDirections) < 1 and distanceBetweenPoints(nearestCoords, target) > distanceBetweenPoints(coords, target):
                 continue
             # Check if cell is an obstacle
             if self.isObstacle(coords):
@@ -120,13 +121,14 @@ class Car(Agent):
             nearestCoords = coords
             nextDirection = direction
         # Return coordinates
-        return (nearestCoords[0], nearestCoords[1], direction)
+        print('Estoy en ('+str(self.pos)+') y voy a (' + str(self.destination) + ')')
+        return (nearestCoords[0], nearestCoords[1], nextDirection)
     
-    def turnOnBlinkers(self, newDirection, newNewDirection):
+    def turnOnBlinkers(self):
         """
         Compares old direction and new direction to turn on/off blinkers
         """
-        if newDirection == newNewDirection and newDirection == self.oldDirection:
+        if self.oldDirection == self.newDirection:
             self.directionLight = (0,0)
             return
 
@@ -155,19 +157,46 @@ class Car(Agent):
         left    r   l       x       x
         right   l   r       x       x
         """ 
-        self.directionLight = turns[newDirection][newNewDirection]
+        self.directionLight = turns[self.oldDirection][self.newDirection]
 
 
     def step(self):
         """ 
-        Determines the new direction it will take, and then moves
+        Determines the new direction it will take
         """
         # Only moves if it isn't parked
-        if not self.is_parked:
-            self.move()
-        # Turn on blinkers when parked
+        if self.is_parked:
+            return
+        self.move()
+    
+    def advance(self):
+        """
+        Moves based on new direction (executes after step)
+        """
+
+        # Only moves if it isn't parked
+        if self.is_parked:
+            return
+            
+        # Checks neighbour's intentions
+        neighbors = self.model.grid.get_neighbors(self.pos, include_center=False, moore=True)
+        diagonalNeighbors = filter(lambda agent: agent.pos[0] != self.pos[0] and agent.pos[1] != self.pos[1], neighbors)
+        shouldMove = True
+        for agent in diagonalNeighbors:
+            if isinstance(agent, Car) and agent.intention == self.intention:
+                # Prioritise the one going straight
+                if agent.oldDirection == agent.newDirection:
+                    # Self should NOT move 
+                    shouldMove = False
+                    break
+        
+        if shouldMove:
+            # Move to next cell and update direction
+            self.model.grid.move_agent(self, self.intention)
+            self.oldDirection = self.newDirection
         else:
-            self.directionLight = (1, 1)
+            # Turn on blinkers
+            self.turnOnBlinkers()
 
 class Destination(Agent):
     """

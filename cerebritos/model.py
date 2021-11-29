@@ -1,5 +1,5 @@
 from mesa import Model
-from mesa.time import RandomActivation
+from mesa.time import SimultaneousActivation
 from mesa.space import MultiGrid
 from agent import *
 import json
@@ -21,7 +21,7 @@ class RandomModel(Model):
             self.height = len(lines)
 
             self.grid = MultiGrid(self.width, self.height,torus = False) 
-            self.schedule = RandomActivation(self)
+            self.schedule = SimultaneousActivation(self)
 
             destinations = []
 
@@ -30,6 +30,7 @@ class RandomModel(Model):
                     if col in ["v", "^", ">", "<", "≤", "⋜", "≥", "⋝"]:
                         agent = Road(f"r{r*self.width+c}", self, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                        self.schedule.add(agent)
                     elif col in ["ú", "ù", "Û", "Ǔ"]:
                         agent = Traffic_Light(f"tl{r*self.width+c}", self, col, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
@@ -37,22 +38,27 @@ class RandomModel(Model):
                     elif col == "#":
                         agent = Obstacle(f"ob{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                        self.schedule.add(agent)
                     elif col == "D":
                         agent = Destination(f"d{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         destinations.append((c, self.height - r - 1))
+                        self.schedule.add(agent)
 
         # Add cars with their destinations
         for i in range(N):
-            agent_amt = 3
-
-            while agent_amt > 1:
-                x = self.random.randint(0, self.width)
-                y = self.random.randint(0, self.height)
-                agent_amt = self.grid[x][y]
+            cell_type = None
+            x = 0
+            y = 0
+            while not isinstance(cell_type, Road):
+                x = self.random.randint(0, self.width-1)
+                y = self.random.randint(0, self.height-1)
+                cell_type = self.grid[x][y][0]
             
             agent = Car(f"c{i}", self, self.random.choice(destinations))
             self.grid.place_agent(agent, (x,y))
+            self.schedule.add(agent)
+            agent.assignDirection()
         
 
         self.running = True 
@@ -78,3 +84,5 @@ class RandomModel(Model):
                 if isinstance(agent, Traffic_Light):
                     if agent.state == "Green":
                         agent.state = "Yellow"
+        
+        # Stop model when all cars are parked

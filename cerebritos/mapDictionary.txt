@@ -9,8 +9,8 @@
     "⋜" : ["Left", "Up" ],
     "≥" : ["Right", "Down"],
     "⋝" : ["Right", "Up"], 
-    "ú" : "tf Right", 
+    "ú" : ["Right"], 
     "ù" : ["Left"], 
     "Û" : ["Up"],
-    "Ǔ" : ["Down"],
+    "Ǔ" : ["Down"]
 }

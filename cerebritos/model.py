@@ -86,3 +86,10 @@ class RandomModel(Model):
                         agent.state = "Yellow"
         
         # Stop model when all cars are parked
+        count = 0
+        for agent in self.schedule.agents:
+            if isinstance(agent, Car) and not agent.is_parked:
+                count += 1
+        
+        if count == 0:
+            self.running = False

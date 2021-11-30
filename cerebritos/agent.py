@@ -20,16 +20,11 @@ class Traffic_Light(Agent):
         self.directions = direction
     
     def step(self):
-        # if self.model.schedule.steps % self.timeToChange == 0:
-        #     self.state = not self.state
         pass
 
 class Car(Agent):
     """
-    Agent that moves randomly.
-    Attributes:
-        unique_id: Agent's ID 
-        direction: Randomly chosen direction chosen from one of eight directions
+    Agent that moves according to destination as calculated by A*.
     """
     def __init__(self, unique_id, model, destination):
         """
@@ -37,18 +32,21 @@ class Car(Agent):
         Args:
             unique_id: The agent's ID
             model: Model reference for the agent
+            destination: Randomly chosen destination from map
         """
         super().__init__(unique_id, model)
         self.is_parked = False
         self.destination = destination
         self.directionLight = None
+        self.route = []
+        self.curr_index = 1
     
     def assignDirection(self):
         self.oldDirection = self.model.grid[self.pos[0]][self.pos[1]][0].directions[0]
 
     def move(self):
         """ 
-        Determines if the agent can move in the direction that was chosen
+        Determines if the agent can move in the direction indicated by its route
         """
         # Check if car has arrived to destination
         if self.destination in self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False):
@@ -57,15 +55,39 @@ class Car(Agent):
             return
 
         currentCell = self.model.grid[self.pos[0]][self.pos[1]]
-        # Next cell
-        (x, y, self.newDirection) = self.goToCoords(self.destination, self.pos)
+
         # If traffic light is ahead and is not green, do not move...
         if isinstance(currentCell[0], Traffic_Light):
             if currentCell[0].state != "Green":
                 return
         
-        self.intention = (x,y)
+        next_cell = self.route[self.curr_index]
+
+        if not self.isObstacle(next_cell):
+            self.intention = next_cell
+            self.newDirection = self.calcDirection()
+            self.curr_index += 1
         
+        print('Estoy en ('+str(self.pos)+') y voy a (' + str(self.destination) + ')')
+        print(self.oldDirection, self.newDirection)
+
+    def calcDirection(self):
+        """
+        Returns direction string based on current and last positions
+        """
+        old = self.route[self.curr_index-1]
+        new = self.route[self.curr_index]
+
+        # Calculate difference between both positions
+        diff = new[0] - old[0], new[1] - old[1]
+        directions = {
+            (-1,  0) : "Left",
+            ( 1,  0) : "Right",
+            ( 0, -1) : "Down",
+            ( 0,  1) : "Up"
+        }
+        return directions[diff]
+
     def getDirection(self, direction):
         """
         Returns coordinates in the given direction
@@ -94,35 +116,7 @@ class Car(Agent):
                 return True
         return False
 
-    def goToCoords(self, target, start):
-        """
-        Returns the coords of the cell to go to next in order to arrive at target (tuple). Ignores obstacles
-        """
-        if target == start:
-            return (target[0], target[1], self.oldDirection)
-        # Get current road cell (or traffic light cell) (asume road agent is ALWAYS @0)
-        currentRoadAgent = self.model.grid[start[0]][start[1]][0]
-        # Get current road cell directions
-        currentRoadAgentDirections = currentRoadAgent.directions
-        # Store here coords nearest to target
-        nearestCoords = self.pos
-        nextDirection = self.oldDirection
-        # Get available neighbors
-        for direction in currentRoadAgentDirections:
-            coords = self.getDirection(direction)
-            # Check if distance is bigger than that of nearest coords (only in intersections)
-            # if len(currentRoadAgentDirections)>1 and distanceBetweenPoints(nearestCoords, target) < distanceBetweenPoints(coords, target):
-            if len(currentRoadAgentDirections) < 1 and distanceBetweenPoints(nearestCoords, target) > distanceBetweenPoints(coords, target):
-                continue
-            # Check if cell is an obstacle
-            if self.isObstacle(coords):
-                continue
-            # If all passes, change nearest coords
-            nearestCoords = coords
-            nextDirection = direction
-        # Return coordinates
-        print('Estoy en ('+str(self.pos)+') y voy a (' + str(self.destination) + ')')
-        return (nearestCoords[0], nearestCoords[1], nextDirection)
+
     
     def turnOnBlinkers(self):
         """

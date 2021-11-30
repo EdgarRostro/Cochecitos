@@ -4,7 +4,7 @@ from mesa.space import MultiGrid
 from agent import *
 import json
 
-class RandomModel(Model):
+class City(Model):
     """ 
     Creates a new model with random agents.
     Args:

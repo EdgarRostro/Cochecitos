@@ -2,6 +2,7 @@ from mesa import Model
 from mesa.time import SimultaneousActivation
 from mesa.space import MultiGrid
 from agent import *
+from a_star import AStar
 import json
 
 class City(Model):
@@ -15,6 +16,9 @@ class City(Model):
 
         dataDictionary = json.load(open("mapDictionary.txt"))
 
+        destinations = []
+        maze = []
+
         with open('base.txt') as baseFile:
             lines = baseFile.readlines()
             self.width = len(lines[0])-1
@@ -23,9 +27,8 @@ class City(Model):
             self.grid = MultiGrid(self.width, self.height,torus = False) 
             self.schedule = SimultaneousActivation(self)
 
-            destinations = []
-
             for r, row in enumerate(lines):
+                maze.append(list(row)[:-1])
                 for c, col in enumerate(row):
                     if col in ["v", "^", ">", "<", "≤", "⋜", "≥", "⋝"]:
                         agent = Road(f"r{r*self.width+c}", self, dataDictionary[col])
@@ -45,6 +48,7 @@ class City(Model):
                         destinations.append((c, self.height - r - 1))
                         self.schedule.add(agent)
 
+        a_star = AStar(maze)
         # Add cars with their destinations
         for i in range(N):
             cell_type = None
@@ -59,7 +63,7 @@ class City(Model):
             self.grid.place_agent(agent, (x,y))
             self.schedule.add(agent)
             agent.assignDirection()
-        
+            agent.route = a_star.search(1, (x,y), agent.destination)
 
         self.running = True 
 

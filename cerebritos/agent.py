@@ -37,7 +37,7 @@ class Car(Agent):
         super().__init__(unique_id, model)
         self.is_parked = False
         self.destination = destination
-        self.directionLight = None
+        self.directionLight = (0, 0)
         self.route = []
         self.curr_index = 1
     
@@ -68,8 +68,8 @@ class Car(Agent):
             self.newDirection = self.calcDirection()
             self.curr_index += 1
         
-        print('Estoy en ('+str(self.pos)+') y voy a (' + str(self.destination) + ')')
-        print(self.oldDirection, self.newDirection)
+        # print('Estoy en ('+str(self.pos)+') y voy a (' + str(self.destination) + ')')
+        # print(self.oldDirection, self.newDirection)
 
     def calcDirection(self):
         """

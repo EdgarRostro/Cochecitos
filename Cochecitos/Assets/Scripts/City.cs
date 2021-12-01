@@ -33,7 +33,7 @@ public class City : MonoBehaviour {
     string getCarsEndpoint = "/cars";
     string getTrafficLightsEndpoint = "/trafficlights";
 
-    [SerializeField] int carsAmt;
+    [SerializeField] int amountOfCars;
     [SerializeField] int timeLimit;
 
     [SerializeField] GameObject carGameObject, trafficLightGameObject;
@@ -93,14 +93,14 @@ public class City : MonoBehaviour {
             for(int i = 0; i < trafficLights.Count; i++){
                 string state = trafficLightsData.trafficLights[i].state;
             }
-
-
         }
+        timer += Time.deltaTime;
+        totalTime += Time.deltaTime;
     }
 
     IEnumerator InitSimulation(){
         WWWForm form = new WWWForm();
-        form.AddField("cars", cars.ToString());
+        form.AddField("cars", amountOfCars.ToString());
         form.AddField("timeLimit", timeLimit.ToString());
         UnityWebRequest www = UnityWebRequest.Post(hostname + initEndpoint, form);   
         yield return www.SendWebRequest();
@@ -135,8 +135,7 @@ public class City : MonoBehaviour {
         } else {
             trafficLightsData = JsonUtility.FromJson<TrafficLightDataList>(www.downloadHandler.text);
             foreach(TrafficLightData data in trafficLightsData.trafficLights){
-                // TODO : Define traffic light height
-                trafficLights.Add(Instantiate(trafficLightGameObject, new Vector3(data.x, 10, data.y), Quaternion.identity));
+                trafficLights.Add(Instantiate(trafficLightGameObject, new Vector3(data.x, data.y, trafficLightHeight), Quaternion.identity));
             }
         }
     }
@@ -186,7 +185,8 @@ public class City : MonoBehaviour {
 
     IEnumerator Quit(){
         Debug.Log("Quitting. Missing final statistics");
-        yield return null;
+        UnityWebRequest www = UnityWebRequest.Get(hostname + "/finalstats");
+        yield return www.SendWebRequest();
     }
 
 }

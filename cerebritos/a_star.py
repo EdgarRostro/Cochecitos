@@ -1,3 +1,15 @@
+"""
+Original code by Baijayanta Roy
+https://github.com/BaijayantaRoy/Medium-Article/blob/master/A_Star.ipynb
+
+Modifications made 30-Nov-2021
+    - Move implementation into class for ease of use
+    - Maze input
+    - return_path and search functions in order to adjust x/y coordinates
+    - Movements depend on input maze (new set of symbols)
+    - Algorithm returns one cell before reaching end_node
+"""
+
 import numpy as np
 
 class Node:

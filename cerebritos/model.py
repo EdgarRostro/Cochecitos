@@ -55,8 +55,7 @@ class City(Model):
             x = 0
             y = 0
             # Place car in road and where there aren't other cars
-            while not isinstance(cell_type, Road):
-            #  and len(self.grid[x][y]) > 1:
+            while not isinstance(cell_type, Road) or len(self.grid[x][y]) > 1:
                 x = self.random.randint(0, self.width-1)
                 y = self.random.randint(0, self.height-1)
                 cell_type = self.grid[x][y][0]

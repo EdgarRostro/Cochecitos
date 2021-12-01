@@ -55,12 +55,6 @@ class Car(Agent):
             self.is_parked = True
             return
 
-        # currentCell = self.model.grid[self.pos[0]][self.pos[1]]
-
-        # If traffic light is ahead and is not green, do not move...
-        # if isinstance(currentCell[0], Traffic_Light):
-        #     if currentCell[0].state != "Green":
-        #         return
         try:
             next_cell = self.route[self.curr_index]
         except:

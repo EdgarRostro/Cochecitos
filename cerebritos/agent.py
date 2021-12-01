@@ -1,9 +1,4 @@
 from mesa import Agent
-from math import sqrt
-
-def distanceBetweenPoints(point1, point2):
-    return sqrt( pow(point1[0] - point2[0], 2) + pow(point1[1] + point2[1], 2))
-
 
 class Traffic_Light(Agent):
     """
@@ -26,23 +21,29 @@ class Car(Agent):
     """
     Agent that moves according to destination as calculated by A*.
     """
-    def __init__(self, unique_id, model, destination):
+    def __init__(self, unique_id, model, destination, route):
         """
         Creates a new random agent.
         Args:
             unique_id: The agent's ID
             model: Model reference for the agent
             destination: Randomly chosen destination from map
+            route: Path to take from original position to destination
         """
         super().__init__(unique_id, model)
         self.is_parked = False
         self.destination = destination
         self.directionLight = (0, 0)
-        self.route = []
         self.curr_index = 1
+        self.route = route
+        self.intention = self.route[1]
     
     def assignDirection(self):
+        """
+        Initialise agent's old direction from model
+        """
         self.oldDirection = self.model.grid[self.pos[0]][self.pos[1]][0].directions[0]
+        self.newDirection = self.oldDirection
 
     def move(self):
         """ 
@@ -54,21 +55,25 @@ class Car(Agent):
             self.is_parked = True
             return
 
-        currentCell = self.model.grid[self.pos[0]][self.pos[1]]
+        # currentCell = self.model.grid[self.pos[0]][self.pos[1]]
 
         # If traffic light is ahead and is not green, do not move...
-        if isinstance(currentCell[0], Traffic_Light):
-            if currentCell[0].state != "Green":
-                return
-        
-        next_cell = self.route[self.curr_index]
+        # if isinstance(currentCell[0], Traffic_Light):
+        #     if currentCell[0].state != "Green":
+        #         return
+        try:
+            next_cell = self.route[self.curr_index]
+        except:
+            print(self.route)
+            print(self.curr_index, len(self.route))
+            print(self.pos)
 
         if not self.isObstacle(next_cell):
             self.intention = next_cell
             self.newDirection = self.calcDirection()
             self.curr_index += 1
         
-        # print('Estoy en ('+str(self.pos)+') y voy a (' + str(self.destination) + ')')
+        print('Estoy en '+str(self.pos)+' y voy a ' + str(self.destination)+' quiero ir a '+str(self.intention)+' vieja '+self.oldDirection+' nueva '+self.newDirection)
         # print(self.oldDirection, self.newDirection)
 
     def calcDirection(self):
@@ -99,8 +104,11 @@ class Car(Agent):
                     return False
                 else:
                     return True
-            if isinstance(agent, Obstacle):
-                return True
+            if isinstance(agent, Traffic_Light):
+                if agent.state == "Green":
+                    return False
+                else:
+                    return True
         return False
     
     def turnOnBlinkers(self):
@@ -129,13 +137,6 @@ class Car(Agent):
                 "Down" : (0, 1)
             }
         }
-        """
-                up  down    left    right
-        up      x   x       r       l
-        down    x   x       l       r
-        left    r   l       x       x
-        right   l   r       x       x
-        """ 
         self.directionLight = turns[self.oldDirection][self.newDirection]
 
     def step(self):
@@ -175,6 +176,7 @@ class Car(Agent):
         else:
             # Turn on blinkers
             self.turnOnBlinkers()
+            self.curr_index-=1
 
 class Destination(Agent):
     """

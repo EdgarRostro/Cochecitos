@@ -54,16 +54,19 @@ class City(Model):
             cell_type = None
             x = 0
             y = 0
+            # Place car in road and where there aren't other cars
             while not isinstance(cell_type, Road):
+            #  and len(self.grid[x][y]) > 1:
                 x = self.random.randint(0, self.width-1)
                 y = self.random.randint(0, self.height-1)
                 cell_type = self.grid[x][y][0]
             
-            agent = Car(f"c{i}", self, self.random.choice(destinations))
+            fate = self.random.choice(destinations)
+            route = a_star.search(1, (x,y), fate)
+            agent = Car(f"c{i}", self, fate, route)
             self.grid.place_agent(agent, (x,y))
             self.schedule.add(agent)
             agent.assignDirection()
-            agent.route = a_star.search(1, (x,y), agent.destination)
 
         self.running = True 
 
@@ -83,7 +86,7 @@ class City(Model):
                         agent.state = "Red"
 
         # Change green lights to yellow
-        elif self.schedule.steps % 10 == 9:
+        elif self.schedule.steps % 10 == 8:
             for agent in self.schedule.agents:
                 if isinstance(agent, Traffic_Light):
                     if agent.state == "Green":

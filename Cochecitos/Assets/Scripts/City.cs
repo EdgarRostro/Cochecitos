@@ -5,25 +5,25 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 class CarData{
-    float old_x;
-    float old_y;
-    float x;
-    float y;
-    List<bool> directionLight;
-    bool isParked;
+    public float old_x;
+    public float old_y;
+    public float x;
+    public float y;
+    public List<bool> directionLight;
+    public bool isParked;
 }
 class CarDataList {
-    List<CarData> cars;
+    public List<CarData> cars;
 }
 
 class TrafficLightData{
-    float x;
-    float y;
-    string state;
+    public float x;
+    public float y;
+    public string state;
 }
 
 class TrafficLightDataList{
-    List<TrafficLightData> trafficLights;
+    public List<TrafficLightData> trafficLights;
 }
 
 public class City : MonoBehaviour {
@@ -33,7 +33,7 @@ public class City : MonoBehaviour {
     string getCarsEndpoint = "/cars";
     string getTrafficLightsEndpoint = "/trafficlights";
 
-    [SerializeField] int cars;
+    [SerializeField] int amountOfCars;
     [SerializeField] int timeLimit;
 
     [SerializeField] GameObject carGameObject, trafficLightGameObject;
@@ -67,7 +67,7 @@ public class City : MonoBehaviour {
         if(timer >= timeToUpdate){
             timer = 0;
             refreshed = false;
-            StartCoroutine(UpdateSimulation());
+            StartCoroutine(Step());
         }
         float t = timer/timeToUpdate;
         // Smooth transition
@@ -78,7 +78,8 @@ public class City : MonoBehaviour {
                 // Interpolation
                 Vector3 interpolation = Vector3.Lerp(
                     new Vector3(carsData.cars[i].old_x, carsData.cars[i].old_y), 
-                    new Vector3(carsData.cars[i].x, carsData.cars[i].y)
+                    new Vector3(carsData.cars[i].x, carsData.cars[i].y), 
+                    dt
                 );
                 cars[i].transform.position = interpolation;
                 // Get direction as vector substraction
@@ -92,16 +93,16 @@ public class City : MonoBehaviour {
             for(int i = 0; i < trafficLights.Count; i++){
                 string state = trafficLightsData.trafficLights[i].state;
             }
-
-
         }
+        timer += Time.deltaTime;
+        totalTime += Time.deltaTime;
     }
 
     IEnumerator InitSimulation(){
         WWWForm form = new WWWForm();
-        form.addField("cars", cars.toString());
-        form.addField("timeLimit", timeLimit.toString());
-        UnityWebRequest www = UnityWebRequest.Post(hostname + initEndpoint);   
+        form.AddField("cars", amountOfCars.ToString());
+        form.AddField("timeLimit", timeLimit.ToString());
+        UnityWebRequest www = UnityWebRequest.Post(hostname + initEndpoint, form);   
         yield return www.SendWebRequest();
         if(www.result != UnityWebRequest.Result.Success){
             Debug.Log(www.error);
@@ -120,7 +121,7 @@ public class City : MonoBehaviour {
         } else {
             carsData = JsonUtility.FromJson<CarDataList>(www.downloadHandler.text);
             foreach(CarData data in carsData.cars){
-                cars.Add(Instantiate(CarGameObject, new Vector3(data.x, data.y, 0), Quaternion.identity));
+                cars.Add(Instantiate(carGameObject, new Vector3(data.x, data.y, 0), Quaternion.identity));
             }
             countStart++;
         }
@@ -134,7 +135,7 @@ public class City : MonoBehaviour {
         } else {
             trafficLightsData = JsonUtility.FromJson<TrafficLightDataList>(www.downloadHandler.text);
             foreach(TrafficLightData data in trafficLightsData.trafficLights){
-                trafficLights.Add(Instantiate(trafficLightGameObject, new Vector3(data.x, data.y, traffic), Quaternion.identity));
+                trafficLights.Add(Instantiate(trafficLightGameObject, new Vector3(data.x, data.y, trafficLightHeight), Quaternion.identity));
             }
         }
     }
@@ -163,10 +164,10 @@ public class City : MonoBehaviour {
             Debug.Log(www.error);
         } else {
             CarDataList _carsData = JsonUtility.FromJson<CarDataList>(www.downloadHandler.text);
-            for(int i = 0; i < carsData.Count; i++){
-                _carsData[i].old_x = carsData[i].x;
-                _carsData[i].old_y = carsData[i].y;
-                carsData[i] = _carsData[i];
+            for(int i = 0; i < carsData.cars.Count; i++){
+                _carsData.cars[i].old_x = carsData.cars[i].x;
+                _carsData.cars[i].old_y = carsData.cars[i].y;
+                carsData.cars[i] = _carsData.cars[i];
             }
             countStart++;
         }
@@ -184,6 +185,8 @@ public class City : MonoBehaviour {
 
     IEnumerator Quit(){
         Debug.Log("Quitting. Missing final statistics");
+        UnityWebRequest www = UnityWebRequest.Get(hostname + "/finalstats");
+        yield return www.SendWebRequest();
     }
 
 }

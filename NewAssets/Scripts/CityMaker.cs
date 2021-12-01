@@ -48,21 +48,29 @@ public class CityMaker : MonoBehaviour
                 tile = Instantiate(roadPrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
                 x += 1;
-            }else if(tiles[i] == '⋝' || tiles[i] == '≥' || tiles[i] == '≤' || tiles[i] == '⋜'){
+            } else if(tiles[i] == '⋝' || tiles[i] == '≥' || tiles[i] == '≤' || tiles[i] == '⋜'){
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(centerPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
-            } else if (tiles[i] == 'ù' || tiles[i] == 'ú') {
+            } else if (tiles[i] == 'ú') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
-            } else if (tiles[i] == 'Ǔ' ||  tiles[i] == 'Û') {
+            } else if (tiles[i] == 'ù') {
+                position = new Vector3(x * tileSize, 0, y * tileSize);
+                tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 270, 0));
+                tile.transform.parent = transform;
+                x += 1;
+            } else if (tiles[i] == 'Ǔ') {
+                position = new Vector3(x * tileSize, 0, y * tileSize);
+                tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 180, 0));
+                tile.transform.parent = transform;
+                x += 1;
+            } else if (tiles[i] == 'Û') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaphorePrefab, position, Quaternion.identity);
-                tile = Instantiate(roadPrefab, position, Quaternion.Euler(0, 90, 0));
-                tile.transform.parent = transform;
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'D') {

@@ -87,23 +87,10 @@ class Car(Agent):
             ( 0,  1) : "Up"
         }
         return directions[diff]
-
-    def getDirection(self, direction):
-        """
-        Returns coordinates in the given direction
-        """
-        if direction == "Left":
-            return (self.pos[0]-1, self.pos[1])
-        elif direction == "Right":
-            return (self.pos[0]+1, self.pos[1])
-        elif direction == "Up":
-            return (self.pos[0], self.pos[1]+1)
-        else:
-            return (self.pos[0], self.pos[1]-1)
     
     def isObstacle(self, cell):
         """
-        Returns true if given cell is an obstacle (unparked car, Obstacle object)
+        Returns true if given cell is an obstacle (unparked car, red Traffic Light)
         """
         agents = self.model.grid[cell[0]][cell[1]]
         for agent in agents:
@@ -115,8 +102,6 @@ class Car(Agent):
             if isinstance(agent, Obstacle):
                 return True
         return False
-
-
     
     def turnOnBlinkers(self):
         """
@@ -153,7 +138,6 @@ class Car(Agent):
         """ 
         self.directionLight = turns[self.oldDirection][self.newDirection]
 
-
     def step(self):
         """ 
         Determines the new direction it will take
@@ -177,7 +161,7 @@ class Car(Agent):
         diagonalNeighbors = filter(lambda agent: agent.pos[0] != self.pos[0] and agent.pos[1] != self.pos[1], neighbors)
         shouldMove = True
         for agent in diagonalNeighbors:
-            if isinstance(agent, Car) and agent.intention == self.intention:
+            if isinstance(agent, Car) and agent.intention == self.intention and not agent.is_parked:
                 # Prioritise the one going straight
                 if agent.oldDirection == agent.newDirection:
                     # Self should NOT move 

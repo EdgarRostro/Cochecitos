@@ -14,12 +14,12 @@ class City(Model):
     """
     def __init__(self, N):
 
-        dataDictionary = json.load(open("mapDictionary.txt"))
+        dataDictionary = json.load(open("./cerebritos/mapDictionary.txt"))
 
         destinations = []
         maze = []
 
-        with open('base.txt') as baseFile:
+        with open('./cerebritos/base.txt') as baseFile:
             lines = baseFile.readlines()
             self.width = len(lines[0])-1
             self.height = len(lines)

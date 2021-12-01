@@ -8,6 +8,7 @@ Modifications made 30-Nov-2021
     - return_path and search functions in order to adjust x/y coordinates
     - Movements depend on input maze (new set of symbols)
     - Algorithm returns one cell before reaching end_node
+    - Heuristic uses Manhattan distance
 """
 
 import numpy as np

@@ -34,7 +34,7 @@ class Car(Agent):
         self.is_parked = False
         self.destination = destination
         self.directionLight = (0, 0)
-        self.curr_index = 1
+        self.curr_index = 0
         self.route = route
         self.intention = self.route[1]
     
@@ -55,27 +55,22 @@ class Car(Agent):
             self.is_parked = True
             return
 
-        try:
-            next_cell = self.route[self.curr_index]
-        except:
-            print(self.route)
-            print(self.curr_index, len(self.route))
-            print(self.pos)
+        next_cell = self.route[self.curr_index+1]
 
         if not self.isObstacle(next_cell):
             self.intention = next_cell
             self.newDirection = self.calcDirection()
             self.curr_index += 1
         
-        print('Estoy en '+str(self.pos)+' y voy a ' + str(self.destination)+' quiero ir a '+str(self.intention)+' vieja '+self.oldDirection+' nueva '+self.newDirection)
-        # print(self.oldDirection, self.newDirection)
-
     def calcDirection(self):
         """
         Returns direction string based on current and last positions
         """
-        old = self.route[self.curr_index-1]
-        new = self.route[self.curr_index]
+        old = self.pos
+        new = self.intention
+
+        if old == new:
+            return self.oldDirection
 
         # Calculate difference between both positions
         diff = new[0] - old[0], new[1] - old[1]
@@ -94,14 +89,10 @@ class Car(Agent):
         agents = self.model.grid[cell[0]][cell[1]]
         for agent in agents:
             if isinstance(agent, Car):
-                if agent.is_parked:
-                    return False
-                else:
+                if not agent.is_parked and agent.unique_id != self.unique_id:
                     return True
             if isinstance(agent, Traffic_Light):
-                if agent.state == "Green":
-                    return False
-                else:
+                if agent.state != "Green":
                     return True
         return False
     
@@ -174,7 +165,7 @@ class Car(Agent):
 
 class Destination(Agent):
     """
-    Obstacle agent. Just to add obstacles to the grid.
+    Destination agent. Determined by map.
     """
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -194,7 +185,7 @@ class Obstacle(Agent):
 
 class Road(Agent):
     """
-    Obstacle agent. Just to add obstacles to the grid.
+    A square on the road. Determines car's movement.
     """
     def __init__(self, unique_id, model, directions=["Left"]):
         super().__init__(unique_id, model)

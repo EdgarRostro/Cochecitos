@@ -9,12 +9,13 @@ public class Car : MonoBehaviour {
     GameObject frontLightA;
     GameObject frontLightB;
     void Start(){
-        leftBlinker = transform.Find("LeftBlinker").gameObject;
-        rightBlinker = transform.Find("RightBlinker").gameObject;
-        frontLightA = transform.Find("FrontLightLeft").gameObject;
-        frontLightB = transform.Find("FrontLightRight").gameObject;
+        leftBlinker = transform.Find("Carroceria/LeftBlinker").gameObject;
+        rightBlinker = transform.Find("Carroceria/RightBlinker").gameObject;
+        frontLightA = transform.Find("Carroceria/FrontLightLeft").gameObject;
+        frontLightB = transform.Find("Carroceria/FrontLightRight").gameObject;
 
-        this.toggleLeftBlinker(true);
+        // this.toggleLeftBlinker(true);
+        this.toggleFrontLights(true);
     }
 
     public void toggleLeftBlinker(bool newState){

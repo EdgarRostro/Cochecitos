@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TrafficLight : MonoBehaviour {
-    public string state;
     GameObject redLight;
-    GameObject greenLight;
     GameObject yellowLight;
+    GameObject greenLight;
 
     void Start(){
-    }
+        redLight = transform.Find("Rojo/RedLight").gameObject;
+        yellowLight = transform.Find("Amarillo/YellowLight").gameObject;
+        greenLight = transform.Find("Verde/GreenLight").gameObject;
+        this.toggleState("Green");
+    } 
 
     void Update(){}
 
-    void toggleState(string newState){
-        if(newState == state) return;
-        if(newState == "Red"){
-            Debug.Log("I am red");
-        } else if(newState == "Green"){
-            Debug.Log("I am green");
-        } else if(newState == "Yellow"){
-            Debug.Log("I am yellow");
-        }
+    public void toggleState(string newState){
+        redLight.SetActive(newState == "Red");
+        yellowLight.SetActive(newState == "Yellow");
+        greenLight.SetActive(newState == "Green");
     }
 }

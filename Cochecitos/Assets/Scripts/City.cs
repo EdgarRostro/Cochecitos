@@ -5,15 +5,27 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 class CarData{
-    public float old_x;
-    public float old_y;
+    // public float old_x;
+    // public float old_y;
     public float x;
     public float y;
-    public List<int> directionLight;
+    public int directionLightLeft;
+    public int directionLightRight;
     public bool isParked;
+    public CarData(){
+        this.x = 0;
+        this.y = 0;
+        this.directionLightLeft = 0;
+        this.directionLightRight = 0;
+        this.isParked = false;
+    }
 }
 class CarDataList {
-    public List<CarData> cars;
+    public CarData[] cars;
+    public CarDataList(int n){
+        cars = new CarData[n];
+        for(int i = 0; i < n; i++) cars[i] = new CarData();
+    }
 }
 
 class TrafficLightData{
@@ -48,7 +60,7 @@ public class City : MonoBehaviour {
 
     void Start(){
         cars = new List<GameObject>();
-        carsData = new CarDataList();
+        carsData = new CarDataList(amountOfCars);
         trafficLights = new List<GameObject>();
         trafficLightsData = new TrafficLightDataList();
         refreshed = true;
@@ -74,9 +86,12 @@ public class City : MonoBehaviour {
         float t = timer/timeToUpdate;
         // Smooth transition
         dt = t * t * (3f - 2f*t);
-        if(refreshed && countStart >= 4){
+            Debug.Log("Refreshed is " + refreshed);
+            Debug.Log("CountStart is " + countStart);
+        if(refreshed && countStart >= 1){
+            Debug.Log("Updating something here");
             // Update cars
-            for(int i = 0; i < cars.Count; i++){
+            /* for(int i = 0; i < cars.Count; i++){
                 // Interpolation
                 Vector3 interpolation = Vector3.Lerp(
                     new Vector3(carsData.cars[i].old_x, 0, carsData.cars[i].old_y), 
@@ -90,7 +105,7 @@ public class City : MonoBehaviour {
                 // Get class
                 cars[i].GetComponent<Car>().toggleLeftBlinker(carsData.cars[i].directionLight[0] == 1);
                 cars[i].GetComponent<Car>().toggleRightBlinker(carsData.cars[i].directionLight[1] == 1);
-            } 
+            }  */
             // Update streetlights
             for(int i = 0; i < trafficLights.Count; i++){
                 string state = trafficLightsData.trafficLights[i].state;
@@ -120,14 +135,17 @@ public class City : MonoBehaviour {
         UnityWebRequest www = UnityWebRequest.Get(hostname + getCarsEndpoint);
         yield return www.SendWebRequest();
         if(www.result != UnityWebRequest.Result.Success){
+            Debug.Log("Error al empezar coches");
             Debug.Log(www.error);
         } else {
             carsData = JsonUtility.FromJson<CarDataList>(www.downloadHandler.text);
-            foreach(CarData data in carsData.cars){
-                GameObject car = Instantiate(carGameObject, new Vector3(data.x, 0, data.y), Quaternion.identity);
+            Debug.Log("Download...");
+            Debug.Log(www.downloadHandler.text);
+            // for(int i = 0; i < carsData.cars.Count; i++){
+                /* GameObject car = Instantiate(carGameObject, new Vector3(data.x, 0, data.y), Quaternion.identity);
                 cars.Add(car);
-                car.transform.parent = transform;
-            }
+                car.transform.parent = transform; */
+            // }
             countStart++;
         }
     }
@@ -138,11 +156,10 @@ public class City : MonoBehaviour {
         if(www.result != UnityWebRequest.Result.Success){
             Debug.Log(www.error);
         } else {
-            Debug.Log("Exito");
             if(www.downloadHandler.text == "False"){
                 StartCoroutine(Quit());
             } else {
-                StartCoroutine(GetCarsData());
+                // StartCoroutine(GetCarsData());
                 StartCoroutine(GetTrafficLightsData());
             }
         }
@@ -156,12 +173,11 @@ public class City : MonoBehaviour {
             Debug.Log(www.error);
         } else {
             CarDataList _carsData = JsonUtility.FromJson<CarDataList>(www.downloadHandler.text);
-            for(int i = 0; i < carsData.cars.Count; i++){
-                _carsData.cars[i].old_x = carsData.cars[i].x;
-                _carsData.cars[i].old_y = carsData.cars[i].y;
+            for(int i = 0; i < carsData.cars.Length; i++){
+                // _carsData.cars[i].old_x = carsData.cars[i].x;
+                // _carsData.cars[i].old_y = carsData.cars[i].y;
                 carsData.cars[i] = _carsData.cars[i];
             }
-            countStart++;
         }
     }
 

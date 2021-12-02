@@ -34,7 +34,8 @@ def cars():
             {
                 "x": agent.pos[0], 
                 "y": agent.pos[1], 
-                "directionLight": agent.directionLight, 
+                "directionLightLeft": agent.directionLight[0], 
+                "directionLightRight": agent.directionLight[1], 
                 "isParked": agent.is_parked, 
 
             } for agent in city.schedule.agents if isinstance(agent, Car)

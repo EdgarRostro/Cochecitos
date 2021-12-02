@@ -40,7 +40,7 @@ public class City : MonoBehaviour {
     [SerializeField] float trafficLightHeight;
     List<GameObject> cars;
     CarDataList carsData;
-    List<GameObject> trafficLights;
+    public List<GameObject> trafficLights;
     TrafficLightDataList trafficLightsData;
 
     bool refreshed;
@@ -52,14 +52,17 @@ public class City : MonoBehaviour {
         carsData = new CarDataList();
         trafficLights = new List<GameObject>();
         trafficLightsData = new TrafficLightDataList();
-        StartCoroutine(InitSimulation());
         refreshed = true;
         totalTime = 0;
         timer = 0;
         countStart = 0;
     }
 
-    void Update(){
+    public void __StartSimulation(){
+        StartCoroutine(InitSimulation());
+    }
+
+    void __Update(){
         if(totalTime > timeLimit){
             Debug.Log("Time is up!");
             StartCoroutine(Quit());

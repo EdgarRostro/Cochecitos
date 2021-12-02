@@ -13,19 +13,26 @@ public class CityMaker : MonoBehaviour
     [SerializeField] GameObject cochecitoPrefab;
     [SerializeField] int tileSize;
 
+    public List<GameObject> trafficLights;
+
     // Alternative syntax.
     Color[] coloresCochecito = {Color.red, Color.green, Color.blue, Color.yellow};
     
     // Start is called before the first frame update
     void Start()
     {
+        trafficLights = new List<GameObject>();
         MakeTiles(layout.text);
+
+        transform.GetComponent<City>().trafficLights = this.trafficLights;
+        transform.GetComponent<City>().__StartSimulation();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        transform.GetComponent<City>().__Update();
     }
 
     void MakeTiles(string tiles)
@@ -61,21 +68,25 @@ public class CityMaker : MonoBehaviour
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
+                trafficLights.Add(tile);
                 x += 1;
             } else if (tiles[i] == 'ù') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 270, 0));
                 tile.transform.parent = transform;
+                trafficLights.Add(tile);
                 x += 1;
             } else if (tiles[i] == 'Ǔ') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 180, 0));
                 tile.transform.parent = transform;
+                trafficLights.Add(tile);
                 x += 1;
             } else if (tiles[i] == 'Û') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
+                trafficLights.Add(tile);
                 x += 1;
             } else if (tiles[i] == 'D') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);

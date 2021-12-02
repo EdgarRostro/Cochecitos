@@ -5,13 +5,17 @@ using UnityEngine;
 public class CityMaker : MonoBehaviour
 {
     [SerializeField] TextAsset layout;
-    [SerializeField] GameObject roadPrefab;
-    [SerializeField] GameObject buildingPrefab;
-    [SerializeField] GameObject semaphorePrefab;
-    [SerializeField] GameObject centerPrefab;
-    [SerializeField] GameObject objetivePrefab;
+    [SerializeField] GameObject callePrefab;
+    [SerializeField] GameObject edificioPrefab;
+    [SerializeField] GameObject semaforoPrefab;
+    [SerializeField] GameObject crucePrefab;
+    [SerializeField] GameObject destinoPrefab;
+    [SerializeField] GameObject cochecitoPrefab;
     [SerializeField] int tileSize;
 
+    // Alternative syntax.
+    Color[] coloresCochecito = {Color.red, Color.green, Color.blue, Color.yellow};
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -40,48 +44,54 @@ public class CityMaker : MonoBehaviour
         for (int i=0; i<tiles.Length; i++) {
             if (tiles[i] == '>' || tiles[i] == '<') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(roadPrefab, position, Quaternion.Euler(0, 90, 0));
+                tile = Instantiate(callePrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'v' || tiles[i] == '^') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(roadPrefab, position, Quaternion.identity);
+                tile = Instantiate(callePrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
                 x += 1;
             } else if(tiles[i] == '⋝' || tiles[i] == '≥' || tiles[i] == '≤' || tiles[i] == '⋜'){
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(centerPrefab, position, Quaternion.Euler(0, 90, 0));
+                tile = Instantiate(crucePrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'ú') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 90, 0));
+                tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'ù') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 270, 0));
+                tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 270, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'Ǔ') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 180, 0));
+                tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 180, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'Û') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(semaphorePrefab, position, Quaternion.identity);
+                tile = Instantiate(semaforoPrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'D') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(objetivePrefab, position, Quaternion.Euler(0, 90, 0));
+                tile = Instantiate(destinoPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == '#') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(buildingPrefab, position, Quaternion.identity);
+                tile = Instantiate(edificioPrefab, position, Quaternion.identity);
                 tile.transform.localScale = new Vector3(1, Random.Range(2.5f, 5.0f), 1);
+                tile.transform.parent = transform;
+                x += 1;
+            } else if (tiles[i] == 'T') {
+                position = new Vector3(x * tileSize, 0, y * tileSize);
+                tile = Instantiate(cochecitoPrefab, position, Quaternion.identity);
+                tile.GetComponentInChildren<Renderer>().materials[0].color = coloresCochecito[Random.Range(0, coloresCochecito.Length)];   //Color.red;
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == '\n') {

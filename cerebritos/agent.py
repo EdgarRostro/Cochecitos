@@ -36,6 +36,10 @@ class Car(Agent):
         self.directionLight = (0, 0)
         self.curr_index = 0
         self.route = route
+
+        if len(route) == 1:
+            self.route.append(destination)
+        
         self.intention = self.route[1]
     
     def assignDirection(self):

@@ -2,6 +2,7 @@ from agent import *
 from model import City
 from mesa.visualization.modules import CanvasGrid, BarChartModule
 from mesa.visualization.ModularVisualization import ModularServer
+from os import getenv
 
 def agent_portrayal(agent):
     if agent is None: return
@@ -53,6 +54,7 @@ model_params = {"N":32}
 grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
 
 server = ModularServer(City, [grid], "Traffic Base", model_params)
-                       
-server.port = 8521 # The default
+
+port = int(getenv('PORT', 8080))
+server.port = port
 server.launch()

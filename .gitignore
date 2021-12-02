@@ -59,6 +59,7 @@
 *crashlytics-build.properties
 
 .vscode
-.DS_Store
+*.DS_Store
 
 */__pycache__
+vcap-local.json

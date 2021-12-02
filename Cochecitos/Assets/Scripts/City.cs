@@ -9,7 +9,7 @@ class CarData{
     public float old_y;
     public float x;
     public float y;
-    public List<bool> directionLight;
+    public List<int> directionLight;
     public bool isParked;
 }
 class CarDataList {
@@ -88,7 +88,7 @@ public class City : MonoBehaviour {
                 // Get class
                 cars[i].GetComponent<Car>().toggleLeftBlinker(carsData.cars[i].directionLight[0] == 1);
                 cars[i].GetComponent<Car>().toggleRightBlinker(carsData.cars[i].directionLight[1] == 1);
-            }
+            } 
             // Update streetlights
             for(int i = 0; i < trafficLights.Count; i++){
                 string state = trafficLightsData.trafficLights[i].state;

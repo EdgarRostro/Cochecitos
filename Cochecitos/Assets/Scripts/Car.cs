@@ -3,30 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Car : MonoBehaviour {
-    public bool leftBlinkerOn;
-    public bool rightBlinkerOn;
+    GameObject leftBlinker;
+    GameObject rightBlinker;
 
+    GameObject frontLightA;
+    GameObject frontLightB;
     void Start(){
-        leftBlinkerOn = false;
-        rightBlinkerOn = false;
+        leftBlinker = transform.Find("LeftBlinker").gameObject;
+        rightBlinker = transform.Find("RightBlinker").gameObject;
+        frontLightA = transform.Find("FrontLightLeft").gameObject;
+        frontLightB = transform.Find("FrontLightRight").gameObject;
+
+        this.toggleLeftBlinker(true);
     }
 
-    void toggleLeftBlinker(bool newState){
-        if(newState == leftBlinkerOn) return;
-        if(newState == true){
-            Debug.Log("Left blinker is on");
-        } else {
-            Debug.Log("Left blinker is off");
-        }
-        leftBlinkerOn = newState;
+    public void toggleLeftBlinker(bool newState){
+        leftBlinker.SetActive(newState);
     }
-    void toggleRightBlinker(bool newState){
-        if(newState == rightBlinkerOn) return;
-        if(newState == true){
-            Debug.Log("Right blinker is on");
-        } else {
-            Debug.Log("Right blinker is off");
-        }
-        rightBlinkerOn = newState;
+    public void toggleRightBlinker(bool newState){
+        rightBlinker.SetActive(newState);
+    }
+    public void toggleFrontLights(bool newState){
+        frontLightA.SetActive(newState);
+        frontLightB.SetActive(newState);
     }
 }

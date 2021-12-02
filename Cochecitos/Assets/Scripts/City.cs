@@ -86,12 +86,14 @@ public class City : MonoBehaviour {
                 Vector3 direction = cars[i].transform.position - new Vector3(carsData.cars[i].old_x, carsData.cars[i].old_y);
                 cars[i].transform.rotation = Quaternion.LookRotation(direction);
                 // Get class
-                cars[i].GetComponent<Car>().leftBlinkerOn = carsData.cars[i].directionLight[0];
-                cars[i].GetComponent<Car>().rightBlinkerOn = carsData.cars[i].directionLight[1];
+                cars[i].GetComponent<Car>().toggleLeftBlinker(carsData.cars[i].directionLight[0] == 1);
+                cars[i].GetComponent<Car>().toggleRightBlinker(carsData.cars[i].directionLight[1] == 1);
             }
             // Update streetlights
             for(int i = 0; i < trafficLights.Count; i++){
                 string state = trafficLightsData.trafficLights[i].state;
+                // TODO: Integrar con los semáforos de CityMaker.cs
+                trafficLights[i].GetComponent<TrafficLight>().toggleState(state);
             }
         }
         timer += Time.deltaTime;

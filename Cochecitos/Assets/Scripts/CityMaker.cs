@@ -13,7 +13,7 @@ public class CityMaker : MonoBehaviour
     [SerializeField] GameObject cochecitoPrefab;
     [SerializeField] int tileSize;
 
-    public List<GameObject> trafficLights;
+    List<GameObject> trafficLights;
 
     // Alternative syntax.
     Color[] coloresCochecito = {Color.red, Color.green, Color.blue, Color.yellow};

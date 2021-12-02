@@ -17,6 +17,7 @@ public class TrafficLight : MonoBehaviour {
     void Update(){}
 
     public void toggleState(string newState){
+        Debug.Log("Semaforo ahora es " + newState);
         redLight.SetActive(newState == "Red");
         yellowLight.SetActive(newState == "Yellow");
         greenLight.SetActive(newState == "Green");

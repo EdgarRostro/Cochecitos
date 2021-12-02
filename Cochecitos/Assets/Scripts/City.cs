@@ -36,8 +36,7 @@ public class City : MonoBehaviour {
     [SerializeField] int amountOfCars;
     [SerializeField] int timeLimit;
 
-    [SerializeField] GameObject carGameObject, trafficLightGameObject;
-    [SerializeField] float trafficLightHeight;
+    [SerializeField] GameObject carGameObject;
     List<GameObject> cars;
     CarDataList carsData;
     public List<GameObject> trafficLights;
@@ -62,7 +61,7 @@ public class City : MonoBehaviour {
         StartCoroutine(InitSimulation());
     }
 
-    void __Update(){
+    public void __Update(){
         if(totalTime > timeLimit){
             Debug.Log("Time is up!");
             StartCoroutine(Quit());
@@ -114,7 +113,6 @@ public class City : MonoBehaviour {
         } else {
             Debug.Log("Starting cars");
             StartCoroutine(StartCars());
-            StartCoroutine(StartTrafficLights());
         }
     }
 
@@ -126,22 +124,11 @@ public class City : MonoBehaviour {
         } else {
             carsData = JsonUtility.FromJson<CarDataList>(www.downloadHandler.text);
             foreach(CarData data in carsData.cars){
-                cars.Add(Instantiate(carGameObject, new Vector3(data.x, 0, data.y), Quaternion.identity));
+                GameObject car = Instantiate(carGameObject, new Vector3(data.x, 0, data.y), Quaternion.identity);
+                cars.Add(car);
+                car.transform.parent = transform;
             }
             countStart++;
-        }
-    }
-
-    IEnumerator StartTrafficLights(){
-        UnityWebRequest www = UnityWebRequest.Get(hostname + getTrafficLightsEndpoint);
-        yield return www.SendWebRequest();
-        if(www.result != UnityWebRequest.Result.Success){
-            Debug.Log(www.error);
-        } else {
-            trafficLightsData = JsonUtility.FromJson<TrafficLightDataList>(www.downloadHandler.text);
-            foreach(TrafficLightData data in trafficLightsData.trafficLights){
-                trafficLights.Add(Instantiate(trafficLightGameObject, new Vector3(data.x, data.y, trafficLightHeight), Quaternion.identity));
-            }
         }
     }
 

@@ -18,9 +18,11 @@ public class Car : MonoBehaviour {
     }
 
     public void toggleLeftBlinker(bool newState){
+        Debug.Log("Semaforo ahora es " + newState);
         leftBlinker.SetActive(newState);
     }
     public void toggleRightBlinker(bool newState){
+        Debug.Log("Semaforo ahora es " + newState);
         rightBlinker.SetActive(newState);
     }
     public void toggleFrontLights(bool newState){

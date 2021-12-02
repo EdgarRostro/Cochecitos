@@ -84,6 +84,7 @@ class Car(Agent):
             ( 0, -1) : "Down",
             ( 0,  1) : "Up"
         }
+        self.turnOnBlinkers()
         return directions[diff]
     
     def isObstacle(self, cell):
@@ -127,6 +128,7 @@ class Car(Agent):
             }
         }
         self.directionLight = turns[self.oldDirection][self.newDirection]
+        print("😡", self.directionLight)
 
     def step(self):
         """ 
@@ -164,7 +166,7 @@ class Car(Agent):
             self.oldDirection = self.newDirection
         else:
             # Turn on blinkers
-            self.turnOnBlinkers()
+            # self.turnOnBlinkers()
             self.curr_index-=1
 
 class Destination(Agent):

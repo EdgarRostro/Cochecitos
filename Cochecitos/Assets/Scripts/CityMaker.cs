@@ -11,9 +11,10 @@ public class CityMaker : MonoBehaviour
     [SerializeField] GameObject crucePrefab;
     [SerializeField] GameObject destinoPrefab;
     [SerializeField] GameObject cochecitoPrefab;
-    [SerializeField] int tileSize;
+    int tileSize;
 
     List<GameObject> trafficLights;
+    List<string> trafficLightsStates;
 
     // Alternative syntax.
     Color[] coloresCochecito = {Color.red, Color.green, Color.blue, Color.yellow};
@@ -21,9 +22,10 @@ public class CityMaker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        tileSize = 1;
         trafficLights = new List<GameObject>();
+        trafficLightsStates = new List<string>();
         MakeTiles(layout.text);
-
         transform.GetComponent<City>().trafficLights = this.trafficLights;
         transform.GetComponent<City>().__StartSimulation();
 
@@ -42,7 +44,7 @@ public class CityMaker : MonoBehaviour
         // To draw from the top, find the rows of the file
         // and move down
         // Remove the last enter, and one more to start at 0
-        int y = tiles.Split('\n').Length - 2;
+        int y = tiles.Split('\n').Length - 2 + 1;
         Debug.Log(y);
 
         Vector3 position;
@@ -69,24 +71,28 @@ public class CityMaker : MonoBehaviour
                 tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 trafficLights.Add(tile);
+                trafficLightsStates.Add("Green");
                 x += 1;
             } else if (tiles[i] == 'ù') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 270, 0));
                 tile.transform.parent = transform;
                 trafficLights.Add(tile);
+                trafficLightsStates.Add("Green");
                 x += 1;
             } else if (tiles[i] == 'Ǔ') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.Euler(0, 180, 0));
                 tile.transform.parent = transform;
                 trafficLights.Add(tile);
+                trafficLightsStates.Add("Red");
                 x += 1;
             } else if (tiles[i] == 'Û') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(semaforoPrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
                 trafficLights.Add(tile);
+                trafficLightsStates.Add("Red");
                 x += 1;
             } else if (tiles[i] == 'D') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
@@ -99,17 +105,13 @@ public class CityMaker : MonoBehaviour
                 tile.transform.localScale = new Vector3(1, Random.Range(2.5f, 5.0f), 1);
                 tile.transform.parent = transform;
                 x += 1;
-            } else if (tiles[i] == 'T') {
-                position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(cochecitoPrefab, position, Quaternion.identity);
-                tile.GetComponentInChildren<Renderer>().materials[0].color = coloresCochecito[Random.Range(0, coloresCochecito.Length)];   //Color.red;
-                tile.transform.parent = transform;
-                x += 1;
             } else if (tiles[i] == '\n') {
                 x = 0;
                 y -= 1;
             }
         }
-
+        transform.GetComponent<City>().trafficLights = this.trafficLights;
+        transform.GetComponent<City>().trafficLightsData = new TrafficLightDataList();
+        transform.GetComponent<City>().trafficLightsData.states = this.trafficLightsStates;
     }
 }

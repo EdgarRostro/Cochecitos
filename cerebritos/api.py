@@ -30,7 +30,7 @@ def cars():
     if request.method == 'GET':
         if city == None:
             return jsonify({"error": "Model is not initialized. Initialize and try again"})
-        carsData = [
+        """ carsData = [
             {
                 "x": agent.pos[0], 
                 "y": agent.pos[1], 
@@ -39,8 +39,23 @@ def cars():
                 "isParked": agent.is_parked, 
 
             } for agent in city.schedule.agents if isinstance(agent, Car)
-        ]
-        return jsonify({"cars": carsData})
+        ] """
+        carsData = {
+            "positions": [], 
+            "directionLightLeft": [],
+            "directionLightRight": [],
+            "isParked": [],
+        }
+        for agent in city.schedule.agents:
+            if isinstance(agent, Car):
+                carsData["positions"].append({"x": agent.pos[0], "z": agent.pos[1], "y": 0})
+                carsData["directionLightLeft"].append(agent.directionLight[0])
+                carsData["directionLightRight"].append(agent.directionLight[1])
+                carsData["isParked"].append(agent.is_parked)
+
+        print(carsData)
+        # return jsonify(carsData[0])
+        return jsonify(carsData)
 
 # Obtener estados de los semáforos
 @app.route('/trafficlights', methods = ['GET'])
@@ -49,8 +64,8 @@ def trafficLights():
     if request.method == 'GET':
         if city == None:
             return jsonify({"error": "Model is not initialized. Initialize and try again"})
-        trafficLightsStates = [{"x": agent.pos[0], "y": agent.pos[1], "state": agent.state, "direction": agent.directions} for agent in city.schedule.agents if isinstance(agent, Traffic_Light)]
-        return jsonify({"trafficLights": trafficLightsStates})
+        trafficLightsStates = [agent.state for agent in city.schedule.agents if isinstance(agent, Traffic_Light)]
+        return jsonify({"states": trafficLightsStates})
 
 # Obtener actualizaciones del modelo
 @app.route('/update', methods = ['GET'])

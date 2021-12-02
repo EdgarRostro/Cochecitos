@@ -11,7 +11,7 @@ public class TrafficLight : MonoBehaviour {
         redLight = transform.Find("Rojo/RedLight").gameObject;
         yellowLight = transform.Find("Amarillo/YellowLight").gameObject;
         greenLight = transform.Find("Verde/GreenLight").gameObject;
-        this.toggleState("Green");
+        // this.toggleState("Green");
     } 
 
     void Update(){}

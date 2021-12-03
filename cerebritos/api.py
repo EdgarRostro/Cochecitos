@@ -1,11 +1,8 @@
 from flask import Flask, jsonify, request
 from model import *
 from os import getenv
-from flask_cors import CORS
-from flask_cors import cross_origin
 
 app = Flask("City")
-CORS(app)
 
 cars = 3
 timeLimit = 10
@@ -14,7 +11,6 @@ currentStep = 0
 
 # Inicializar con parámetros de usuarios
 @app.route('/init', methods = ['POST'])
-@cross_origin()
 def initialize():
     global city, cars, timeLimit
     if request.method == 'POST':
@@ -28,7 +24,6 @@ def initialize():
 
 # Obtener posiciones de coches
 @app.route('/cars', methods = ['GET'])
-@cross_origin()
 def cars():
     global city
     if request.method == 'GET':
@@ -63,7 +58,6 @@ def cars():
 
 # Obtener estados de los semáforos
 @app.route('/trafficlights', methods = ['GET'])
-@cross_origin()
 def trafficLights():
     global city
     if request.method == 'GET':
@@ -74,7 +68,6 @@ def trafficLights():
 
 # Obtener actualizaciones del modelo
 @app.route('/update', methods = ['GET'])
-@cross_origin()
 def update():
     global city, currentStep
     if request.method == 'GET':
@@ -86,7 +79,6 @@ def update():
 
 # Obtener estadísticas finales
 @app.route('/finalstats', methods = ['GET'])
-@cross_origin()
 def finalStats():
     global city
     if request.method == 'GET':

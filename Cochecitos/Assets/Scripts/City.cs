@@ -88,7 +88,7 @@ public class City : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) || Input.touchCount > 0){
             if (car){
                 view.transform.parent = null;
-                position = new Vector3(12.5f, 18.5f, 12.5f);
+                position = new Vector3(12.5f, 19.6f, 13.5f);
                 view.transform.localPosition = position;
                 view.transform.localRotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
                 car = false;
@@ -263,7 +263,7 @@ public class City : MonoBehaviour
             TrafficLightDataList finalStats;
             finalStats = JsonUtility.FromJson<TrafficLightDataList>(www.downloadHandler.text);
             transform.GetComponent<CityMaker>().running = false;
-            info.text = "SIMULACIÓN TERMINADA\nCoches estacionados: "+finalStats.states[0]+"\nMovimientos totales: "+finalStats.states[1];
+            info.text = "SIMULACIÓN TERMINADA\nCoches estacionados: "+finalStats.states[0]+"\t\tMovimientos totales: "+finalStats.states[1];
         }
     }
 

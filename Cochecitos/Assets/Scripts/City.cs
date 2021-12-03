@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
 [Serializable] // https://stackoverflow.com/a/41787127/2276332
@@ -40,7 +41,7 @@ public class TrafficLightDataList
 
 public class City : MonoBehaviour
 {
-    string hostname = "localhost:8585";
+    string hostname = "localhost:8080";
     string initEndpoint = "/init";
     string updateEndpoint = "/update";
     string getCarsEndpoint = "/cars";
@@ -50,6 +51,7 @@ public class City : MonoBehaviour
     [SerializeField] int timeLimit;
 
     [SerializeField] GameObject carGameObject;
+    [SerializeField] Text info;
     List<GameObject> cars;
     CarDataList carsData;
     public List<GameObject> trafficLights;
@@ -252,6 +254,17 @@ public class City : MonoBehaviour
         Debug.Log("Quitting. Missing final statistics");
         UnityWebRequest www = UnityWebRequest.Get(hostname + "/finalstats");
         yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            TrafficLightDataList finalStats;
+            finalStats = JsonUtility.FromJson<TrafficLightDataList>(www.downloadHandler.text);
+            transform.GetComponent<CityMaker>().running = false;
+            info.text = "SIMULACIÓN TERMINADA\nCoches estacionados: "+finalStats.states[0]+"\nMovimientos totales: "+finalStats.states[1];
+        }
     }
 
 }

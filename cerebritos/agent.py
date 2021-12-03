@@ -63,10 +63,11 @@ class Car(Agent):
 
         if not self.isObstacle(next_cell):
             self.intention = next_cell
-            self.newDirection = self.calcDirection()
             self.curr_index += 1
+
+        self.calculateNewDirection()
         
-    def calcDirection(self):
+    def calculateNewDirection(self):
         """
         Returns direction string based on current and last positions
         """
@@ -74,8 +75,9 @@ class Car(Agent):
         new = self.intention
 
         if old == new:
-            return self.oldDirection
-
+            self.newDirection = self.oldDirection
+            return
+            
         # Calculate difference between both positions
         diff = new[0] - old[0], new[1] - old[1]
         directions = {
@@ -84,8 +86,7 @@ class Car(Agent):
             ( 0, -1) : "Down",
             ( 0,  1) : "Up"
         }
-        self.turnOnBlinkers()
-        return directions[diff]
+        self.newDirection = directions[diff]
     
     def isObstacle(self, cell):
         """
@@ -128,7 +129,6 @@ class Car(Agent):
             }
         }
         self.directionLight = turns[self.oldDirection][self.newDirection]
-        print("😡", self.directionLight)
 
     def step(self):
         """ 
@@ -163,11 +163,12 @@ class Car(Agent):
         if shouldMove:
             # Move to next cell and update direction
             self.model.grid.move_agent(self, self.intention)
+            self.turnOnBlinkers()
             self.oldDirection = self.newDirection
         else:
             # Turn on blinkers
-            # self.turnOnBlinkers()
             self.curr_index-=1
+            self.turnOnBlinkers()
 
 class Destination(Agent):
     """

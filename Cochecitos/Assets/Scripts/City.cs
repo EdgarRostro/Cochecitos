@@ -21,7 +21,7 @@ public class TrafficLightDataList
 
 public class City : MonoBehaviour
 {
-    string hostname = "localhost:8080";
+    string hostname = "https://cochecitos-insightful-serval-ly.mybluemix.net";
     string initEndpoint = "/init";
     string updateEndpoint = "/update";
     string getCarsEndpoint = "/cars";

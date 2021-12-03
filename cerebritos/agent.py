@@ -36,6 +36,7 @@ class Car(Agent):
         self.directionLight = (0, 0)
         self.curr_index = 0
         self.route = route
+        self.moves = 1
 
         if len(route) == 1:
             self.route.append(destination)
@@ -165,6 +166,7 @@ class Car(Agent):
             self.model.grid.move_agent(self, self.intention)
             self.turnOnBlinkers()
             self.oldDirection = self.newDirection
+            self.moves += 1
         else:
             # Turn on blinkers
             self.curr_index-=1

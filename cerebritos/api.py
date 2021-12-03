@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from model import *
-
-PORT = 8585
+from os import getenv
 
 app = Flask("City")
 
@@ -83,7 +82,10 @@ def update():
 def finalStats():
     global city
     if request.method == 'GET':
-        return "Hola aqui aun faltan las estadísticas."
+        if city == None:
+            return jsonify({"error": "Model is not initialized. Initialize and try again"})
+        parked_cars, moves = city.finalStats()
+        return jsonify({"states": [str(parked_cars), str(moves)]})
 
-if __name__ == "__main__":
-    app.run(host="localhost", port=PORT, debug=True)
+port = int(getenv('PORT', 8080))
+app.run(host='0.0.0.0', port=port, debug=True)

@@ -99,3 +99,22 @@ class City(Model):
         
         if count == 0:
             self.running = False
+    
+    def finalStats(self):
+        """
+        Returns final stats
+        Cars parked:
+            0 - no cars parked
+            1 - all cars parked
+        Amount of moves by all agents
+        """
+        count = 0
+        moves = 0
+
+        for agent in self.schedule.agents:
+            if isinstance(agent, Car):
+                moves += agent.moves
+                if agent.is_parked:
+                    count += 1
+        
+        return count, moves

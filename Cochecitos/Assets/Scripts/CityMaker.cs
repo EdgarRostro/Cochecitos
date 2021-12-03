@@ -11,6 +11,7 @@ public class CityMaker : MonoBehaviour
     [SerializeField] GameObject crucePrefab;
     [SerializeField] GameObject destinoPrefab;
     [SerializeField] GameObject cochecitoPrefab;
+    public bool running;
     int tileSize;
 
     List<GameObject> trafficLights;
@@ -29,12 +30,15 @@ public class CityMaker : MonoBehaviour
         transform.GetComponent<City>().trafficLights = this.trafficLights;
         transform.GetComponent<City>().__StartSimulation();
 
+        running = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(running){
         transform.GetComponent<City>().__Update();
+        }
     }
 
     void MakeTiles(string tiles)

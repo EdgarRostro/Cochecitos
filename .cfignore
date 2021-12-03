@@ -1,0 +1,14 @@
+.github
+.gitignore
+.vscode
+
+LICENSE
+README.md
+
+Cochecitos/
+robotitos/
+
+vcap-local.json
+*/__pycache__
+
+agentes.pdf

@@ -5,28 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-[Serializable] // https://stackoverflow.com/a/41787127/2276332
-class CarData
-{
-    // public float old_x;
-    // public float old_y;
-    public float x;
-    public float y;
-    public int directionLightLeft;
-    public int directionLightRight;
-    public bool isParked;
-    /*     public CarData(){
-            this.x = 0;
-            this.y = 0;
-            this.directionLightLeft = 0;
-            this.directionLightRight = 0;
-            this.isParked = false;
-        } */
-}
-
 class CarDataList
 {
-    // public List<CarData> cars = new List<CarData>();
     public List<Vector3> oldPositions;
     public List<Vector3> positions;
     public List<int> directionLightLeft;
@@ -74,8 +54,6 @@ public class City : MonoBehaviour
     {
         cars = new List<GameObject>();
         carsData = new CarDataList();
-        // trafficLights = new List<GameObject>();
-        // trafficLightsData = new TrafficLightDataList();
         refreshed = true;
         totalTime = 0;
         timer = 0;
@@ -124,7 +102,6 @@ public class City : MonoBehaviour
         }
         float t = timer / timeToUpdate;
         // Smooth transition
-        // dt = t * t * (3f - 2f * t);
         dt = t;
         Debug.Log("Refreshed is " + refreshed);
         Debug.Log("CountStart is " + countStart);
@@ -137,8 +114,8 @@ public class City : MonoBehaviour
                 cars[i].transform.position = interpolation;
                 // Direction
                 Vector3 direction = carsData.positions[i] - carsData.oldPositions[i];
-                // cars[i].transform.rotation = Quaternion.LookRotation(direction);
-                cars[i].transform.rotation = Quaternion.Lerp(cars[i].transform.rotation, Quaternion.LookRotation(direction), dt);
+                if(direction != Vector3.zero)
+                    cars[i].transform.rotation = Quaternion.Lerp(cars[i].transform.rotation, Quaternion.LookRotation(direction), dt);
                 // Direction lights
                 cars[i].GetComponent<Car>().toggleLeftBlinker(carsData.directionLightLeft[i] == 1);
                 cars[i].GetComponent<Car>().toggleRightBlinker(carsData.directionLightRight[i] == 1);

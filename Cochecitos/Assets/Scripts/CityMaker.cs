@@ -37,7 +37,7 @@ public class CityMaker : MonoBehaviour
     void Update()
     {
         if(running){
-        transform.GetComponent<City>().__Update();
+            transform.GetComponent<City>().__Update();
         }
     }
 
